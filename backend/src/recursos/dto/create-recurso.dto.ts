@@ -1,6 +1,10 @@
-import { IsString, IsOptional, IsInt, IsDateString } from 'class-validator';
+import { IsString, IsOptional, IsInt, IsDateString, IsNotEmpty } from 'class-validator';
 
 export class CreateRecursoDto {
+
+  @IsNotEmpty()
+  @IsString()
+  nombre: string;
 
   @IsOptional()
   @IsString()
