@@ -146,11 +146,11 @@ export class PrestamosService {
           //this.databaseService.sanciones.create()
           // ¿Cómo lo hago si no tengo el usuario a quién penalizar?
           const newSancion =  await this.databaseService.sanciones.create({data: {
+            grado: 1,
             rut: findRegular.rut,
             estado_sancion: 'Activo',
             id_usuario: findRegular.id_usuario,
             comentario: 'Equipo entregado un día después del préstamo',
-            
           }})
         } // no hay sancion
         

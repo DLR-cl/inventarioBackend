@@ -59,10 +59,10 @@ model regular {
 model sanciones {
   grado          Int
   id_sanciones   Int         @id @default(autoincrement())
-  comentario     String?     @db.VarChar(1000)
-  estado_sancion String     @db.VarChar(9)
+  comentario     String      @db.VarChar(1000)
+  estado_sancion String      @db.VarChar(9)
   id_usuario     Int
-  rut            String     @db.VarChar(12)
+  rut            String      @db.VarChar(12)
   Usuario        usuario?    @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "sanciones_ibfk_1")
   Estudiante     estudiante? @relation(fields: [rut], references: [rut], onDelete: NoAction, onUpdate: NoAction, map: "sanciones_ibfk_2")
 
