@@ -2,6 +2,10 @@ import { IsString, IsOptional, IsInt, IsDateString, IsNotEmpty } from 'class-val
 
 export class CreateRecursoDto {
 
+  @IsNotEmpty()
+  @IsString()
+  nombre: string;
+  
   @IsOptional()
   @IsString()
   marca?: string;
