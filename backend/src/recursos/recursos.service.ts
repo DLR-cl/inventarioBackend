@@ -1,7 +1,7 @@
 import { HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateRecursoDto } from './dto/create-recurso.dto';
 import { UpdateRecursoDto } from './dto/update-recurso.dto';
-import { DatabaseService } from 'src/database/database/database.service';
+import { DatabaseService } from '../database/database/database.service';
 import { prestamo, Prisma, recurso } from '@prisma/client';
 import { ResponseDto } from './dto/response.dto';
 import { RecursoEntity } from './entities/recurso.entity';

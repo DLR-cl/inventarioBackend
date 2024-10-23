@@ -2,7 +2,7 @@ import { HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { CreatePenalizacioneDto } from './dto/create-penalizacione.dto';
 import { UpdatePenalizacioneDto } from './dto/update-penalizacione.dto';
 import { Penalizacione } from './entities/penalizacione.entity';
-import { DatabaseService } from 'src/database/database/database.service';
+import { DatabaseService } from '../database/database/database.service';
 import { sanciones } from '@prisma/client';
 
 @Injectable()
