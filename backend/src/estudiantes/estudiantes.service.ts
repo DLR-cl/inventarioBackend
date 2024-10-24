@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateEstudianteDto } from './dto/create-estudiante.dto';
 import { UpdateEstudianteDto } from './dto/update-estudiante.dto';
-import { DatabaseService } from 'src/database/database/database.service';
+import { DatabaseService } from '../database/database/database.service';
 import { ResponseDto } from './dto/response.dto';
 
 @Injectable()
