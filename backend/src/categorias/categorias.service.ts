@@ -24,7 +24,7 @@ export class CategoriasService {
       });
 
 
-      if(!findCategoria){
+      if(findCategoria){
         throw new HttpException('La categoría ya existe', HttpStatus.BAD_REQUEST);
       }
 
