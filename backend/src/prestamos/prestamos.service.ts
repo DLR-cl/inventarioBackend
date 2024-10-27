@@ -1,12 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreatePrestamoDto } from './dto/create-prestamo.dto';
 import { UpdatePrestamoDto } from './dto/update-prestamo.dto';
-import { DatabaseService } from 'src/database/database/database.service';
+import { DatabaseService } from '../database/database/database.service';
 import { ResponseDto } from './dto/response.dto';
 import { prestamo, recurso, sanciones} from '@prisma/client';
 import { Prisma } from '@prisma/client';
-import { UpdateRecursoDto } from 'src/recursos/dto/update-recurso.dto';
-import { PenalizacionesService } from 'src/penalizaciones/penalizaciones.service';
+import { UpdateRecursoDto } from '../recursos/dto/update-recurso.dto';
+import { PenalizacionesService } from '../penalizaciones/penalizaciones.service';
 
 @Injectable()
 export class PrestamosService {

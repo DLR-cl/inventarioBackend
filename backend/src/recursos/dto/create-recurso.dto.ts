@@ -5,7 +5,7 @@ export class CreateRecursoDto {
   @IsNotEmpty()
   @IsString()
   nombre: string;
-
+  
   @IsOptional()
   @IsString()
   marca?: string;

@@ -3,7 +3,7 @@ import { CategoriasService } from './categorias.service';
 import { CreateCategoriaDto } from './dto/create-categoria.dto';
 import { UpdateCategoriaDto } from './dto/update-categoria.dto';
 import { promises } from 'dns';
-import { ResponseDto } from 'src/recursos/dto/response.dto';
+import { ResponseDto } from '../recursos/dto/response.dto';
 
 @Controller('categorias')
 export class CategoriasController {

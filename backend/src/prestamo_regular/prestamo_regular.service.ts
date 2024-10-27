@@ -2,9 +2,9 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreatePrestamoRegularDto } from './dto/create-prestamo_regular.dto';
 import { UpdatePrestamoRegularDto } from './dto/update-prestamo_regular.dto';
 import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
-import { DatabaseService } from 'src/database/database/database.service';
+import { DatabaseService } from '../database/database/database.service';
 import { regular } from '@prisma/client';
-import { ResponseDto } from 'src/recursos/dto/response.dto';
+import { ResponseDto } from '../recursos/dto/response.dto';
 
 @Injectable()
 export class PrestamoRegularService {
