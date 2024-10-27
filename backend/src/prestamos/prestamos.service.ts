@@ -19,14 +19,7 @@ export class PrestamosService {
   async create(createPrestamo: CreatePrestamoDto) {
     try {
 
-      // al crear el recurso se crea el prestamo generico  y se actualiza el estado del recurso
-      const findEstado = await this.databaseService.recurso.findUnique({
-        where : {
-          id_dici : createPrestamo.id_dici,
-        }
-      });
-
-      if(!findEstado.estado_recurso){
+      if(!this.estadoRecurso(createPrestamo.id_dici)){
         throw new HttpException('El recurso ya está siendo utilizado', HttpStatus.BAD_REQUEST);
       };
       
@@ -231,6 +224,7 @@ export class PrestamosService {
     }
   }
 
+  // otras funciones
   private passADay(fecha_ini:Date, fecha_fin:Date){
     const diff = Math.abs(fecha_fin.getTime() - fecha_ini.getTime());
     const days = diff/1000*60*60*24;
@@ -242,5 +236,23 @@ export class PrestamosService {
     };
 
   }
+  
+  private async estadoRecurso(id_recurso: string): Promise<boolean> {
+    const recurso = await this.databaseService.recurso.findUnique(
+      {
+        where: {
+          id_dici: id_recurso,
+        }
+      }
+    )
+
+    if(!recurso){
+      throw new HttpException('No existe el recurso señalado', HttpStatus.BAD_REQUEST);  
+    }
+
+    return recurso.estado_recurso;
+  }
+
 }
+
 
