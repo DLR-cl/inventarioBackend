@@ -24,7 +24,7 @@ export class CreateRecursoDto {
 
   @IsOptional()
   @IsInt()
-  Id_categoria?: number;
+  id_categoria?: number;
 
   @IsOptional()
   @IsString()
