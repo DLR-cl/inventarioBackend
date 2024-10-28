@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, isNumber, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, isNumber, IsString, IsDate } from "class-validator";
 
 export class CreateCategoriaDto {
 
@@ -8,7 +8,7 @@ export class CreateCategoriaDto {
     @IsNotEmpty()
     nombre_categoria : string;
 
-    @IsString()
+    @IsDate()
     @IsNotEmpty()
-    fecha_creacion : string;
+    fecha_creacion : Date;
 }

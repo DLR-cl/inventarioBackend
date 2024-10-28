@@ -32,8 +32,8 @@ model especial {
 
 model prestamo {
   id_prestamo         Int                  @id @default(autoincrement())
-  fecha_inicio        DateTime            @db.Date
-  fecha_fin           DateTime?            @db.Date
+  fecha_inicio        DateTime            @db.DateTime
+  fecha_fin           DateTime?            @db.DateTime
   id_dici             String              @db.VarChar(20)
   especial            especial?
   recursos            recurso? @relation(fields: [id_dici], references: [id_dici], onDelete: NoAction, onUpdate: NoAction, map: "prestamo_ibfk_1")
@@ -43,8 +43,8 @@ model prestamo {
 }
 
 model regular {
-  hora_inicio DateTime     @db.Date
-  hora_fin    DateTime?     @db.Date
+  hora_inicio DateTime     @db.DateTime
+  hora_fin    DateTime?     @db.DateTime
   id_prestamo Int         @id
   rut         String     @db.VarChar(12)
   id_usuario  Int
@@ -73,7 +73,7 @@ model sanciones {
 model categoria {
   id_categoria     Int       @id @default(autoincrement())
   nombre_categoria String   @db.VarChar(50) @unique
-  fecha_creacion   String?   @db.VarChar(50)
+  fecha_creacion   DateTime   @db.DateTime  
   recurso          recurso[]
 }
 
@@ -93,7 +93,7 @@ model recurso {
   nombre              String                @db.VarChar(200)
   marca               String?               @db.VarChar(50)
   descripcion         String?               @db.VarChar(3000)
-  fecha_ingreso       DateTime?             @db.Date
+  fecha_ingreso       DateTime?             @db.DateTime
   modelo              String?               @db.VarChar(50)
   estado_recurso      Boolean               @default(true)
   id_categoria        Int?
@@ -111,7 +111,7 @@ model usuario {
   usuario    String     @db.VarChar(30)
   correo     String     @db.VarChar(50)
   password   String     @db.VarChar(30)
-  rut        String     @db.VarChar(12)
+  rut        String     @unique @db.VarChar(12)
   admin      admin?
   ayudante   ayudante?
   sanciones  sanciones[]
