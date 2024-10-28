@@ -8,7 +8,7 @@ export class CreateCategoriaDto {
     @IsNotEmpty()
     nombre_categoria : string;
 
-    @IsDate()
+    @IsString()
     @IsNotEmpty()
-    fecha_creacion : Date;
+    fecha_creacion : string;
 }
