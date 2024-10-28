@@ -5,6 +5,7 @@ import { DatabaseService } from '../database/database/database.service';
 import { ResponseDto } from './dto/response.dto';
 import { Categoria } from './entities/categoria.entity';
 import { categoria, recurso} from '@prisma/client';
+import { promises } from 'dns';
 
 @Injectable()
 export class CategoriasService {
@@ -17,14 +18,7 @@ export class CategoriasService {
     try {
 
       // encontrar categoria creada
-      const categoriaName: string = createCategoria.nombre_categoria.toLowerCase()
-      
-      const findCategoria = await this.databaseService.categoria.findUnique({
-        where : { nombre_categoria: categoriaName},
-      });
-
-
-      if(findCategoria){
+      if(!this.existeCategoriaByName(createCategoria.nombre_categoria)){
         throw new HttpException('La categoría ya existe', HttpStatus.BAD_REQUEST);
       }
 
@@ -59,6 +53,7 @@ export class CategoriasService {
 
   async getAllRecursoByCategoria(id: number): Promise<recurso[]>{
     try {
+
       const findCategoria = await this.databaseService.categoria.findUnique({
         where : { id_categoria: id },
         include: { recurso: true }
@@ -84,13 +79,8 @@ export class CategoriasService {
   async update(id: number, updateCategoria : UpdateCategoriaDto) : Promise<ResponseDto<categoria>> {
     
     try {
-      const findCategoria = await this.databaseService.categoria.findUnique({
-        where : {
-          id_categoria : id,
-        }
-      });
 
-      if(!findCategoria){
+      if(!this.existeCategoriaById(id)){
         throw new HttpException('Error, no existe esa categoria', HttpStatus.BAD_REQUEST);
       };
 
@@ -113,6 +103,17 @@ export class CategoriasService {
 
   async remove(id: number) : Promise<ResponseDto<categoria>>{
     try {
+
+      if(!this.existeCategoriaById(id)){
+        throw new HttpException('Error, categoria no existe', HttpStatus.BAD_REQUEST);
+      }
+
+      // si la categoria aun tiene recursos
+      if(!this.categoriaTieneRecursos(id)){
+        throw new HttpException('Error, la categoria aún tiene recursos registrados', HttpStatus.NOT_ACCEPTABLE);
+      }
+
+      // si no tiene, entonces se elimina.
       const removeCategoria = await this.databaseService.categoria.delete({
         where :{
           id_categoria : id,
@@ -132,5 +133,48 @@ export class CategoriasService {
     }
   }
 
- 
+ // funciones de apoyo
+
+  private async existeCategoriaByName(nombre_categoria: string): Promise<boolean> {
+
+    nombre_categoria = nombre_categoria.toLowerCase()
+    const categoria = await this.databaseService.categoria.findUnique({
+      where: {
+        nombre_categoria: nombre_categoria,
+      }
+    })
+
+    if(!categoria){
+      return false;
+    }
+    return true;
+  }
+
+  
+  private async existeCategoriaById(id_categoria: number): Promise<boolean> {
+
+    const categoria = await this.databaseService.categoria.findUnique({
+      where: {
+        id_categoria: id_categoria,
+      }
+    })
+
+    if(!categoria){
+      return false;
+    }
+    return true;
+  }
+
+  private async categoriaTieneRecursos(id_categoria: number): Promise<boolean> {
+    const recursos_categoria = await this.databaseService.recurso.findMany({
+      where: {
+        id_categoria: id_categoria,
+      }
+    })
+
+    if(!recursos_categoria){
+      return false;
+    }
+    return true;
+  }
 }
