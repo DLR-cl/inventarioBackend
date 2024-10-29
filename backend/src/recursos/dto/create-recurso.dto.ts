@@ -19,8 +19,8 @@ export class CreateRecursoDto {
   modelo?: string;
 
   @IsNotEmpty()
-  @IsDate()
-  fecha_ingreso: Date;
+  @IsString()
+  fecha_ingreso: string;
 
   @IsNotEmpty()
   @IsNumber()

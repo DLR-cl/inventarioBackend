@@ -9,10 +9,20 @@ export class RecursosService {
   constructor(private readonly databaseService : DatabaseService){}
   
   
-  async create(createRecurso: CreateRecursoDto) : Promise<ResponseDto<recurso>>{
+  async create(createRecurso: CreateRecursoDto) : Promise<any>{
     try {
         const newRecurso = await this.databaseService.recurso.create(
-          {data : createRecurso});
+          {data : {
+            nombre: createRecurso.nombre,
+            marca: createRecurso.marca,
+            descripcion: createRecurso.descripcion,
+            modelo: createRecurso.modelo,
+            fecha_ingreso: new Date(createRecurso.fecha_ingreso),
+            id_categoria: createRecurso.id_categoria,
+            id_dici: createRecurso.id_dici,
+            id_uta: createRecurso.id_uta,
+            ubicacion: createRecurso.ubicacion,
+          }});
           
         const response : ResponseDto<recurso> = {
           statusCode : HttpStatus.CREATED,
