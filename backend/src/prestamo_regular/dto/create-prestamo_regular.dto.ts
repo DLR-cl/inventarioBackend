@@ -3,9 +3,9 @@ import { IsDate, isNotEmpty, IsNotEmpty, IsNumber, IsString } from "class-valida
 
 export class CreatePrestamoRegularDto {
 
-    @IsDate()
+    @IsString()
     @IsNotEmpty()
-    hora_inicio : Date;
+    hora_inicio : string;
 
     @IsNotEmpty()
     @IsString()

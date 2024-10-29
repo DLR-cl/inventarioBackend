@@ -16,7 +16,13 @@ export class PrestamoRegularService {
   async create(createPrestamoRegular: CreatePrestamoRegularDto) : Promise<responsePrestamoRegular> {
       try {
         const create_regular = await this.databaseService.regular.create({
-          data : createPrestamoRegular
+          data : {
+            hora_inicio: new Date(createPrestamoRegular.hora_inicio),
+            id_usuario: createPrestamoRegular.id_usuario,
+            rut: createPrestamoRegular.rut,
+            id_dici: createPrestamoRegular.id_dici,
+            hora_fin: null
+          }
         });
         
 
