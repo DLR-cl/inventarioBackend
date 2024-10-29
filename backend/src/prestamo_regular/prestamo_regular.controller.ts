@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { PrestamoRegularService } from './prestamo_regular.service';
 import { CreatePrestamoRegularDto } from './dto/create-prestamo_regular.dto';
 import { UpdatePrestamoRegularDto } from './dto/update-prestamo_regular.dto';
+import { FinPrestamoDto } from './dto/fin-prestamo-dto';
 
 @Controller('prestamo-regular')
 export class PrestamoRegularController {
@@ -22,9 +23,19 @@ export class PrestamoRegularController {
     return this.prestamoRegularService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePrestamoRegularDto: UpdatePrestamoRegularDto) {
-    return this.prestamoRegularService.update(+id, updatePrestamoRegularDto);
+  @Get('/activos')
+  getActivos(){
+    return this.prestamoRegularService.obtenerPrestamosActivos();
+  };
+
+  @Get('/finalizados')
+  getFinalizados(){
+    return this.prestamoRegularService.obtenerPrestamosFinalizados();
+  }
+
+  @Patch('/finalizar-prestamo')
+  finalizarPrestamo(@Body() finPrestamo: FinPrestamoDto){
+    return this.prestamoRegularService.finalizarPrestamo(finPrestamo);
   }
 
   @Delete(':id')

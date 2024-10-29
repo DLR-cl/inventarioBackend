@@ -7,17 +7,17 @@ export class CreatePrestamoRegularDto {
     @IsNotEmpty()
     hora_inicio : Date;
 
-    @IsNumber()
     @IsNotEmpty()
-    id_prestamo : number;
-
     @IsString()
-    @IsNotEmpty()
-    rut : string;
+    rut: string;
 
     @IsNumber()
     @IsNotEmpty()
     id_usuario : number;
+
+    @IsString()
+    @IsNotEmpty()
+    id_dici : string;
 
 
 }

@@ -2,9 +2,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { DatabaseService } from '../database/database/database.service';
-import { ResponseDto } from './dto/response.dto';
-import { ayudante, usuario } from '@prisma/client';
-import { Prisma } from '@prisma/client';
+import { ResponseUsuariosDto } from './dto/response.dto';
+import { Prisma, roles, usuario } from '@prisma/client';
 import { promises } from 'dns';
 import { TiposUsuario } from './enums/tiposUsuarios.enum';
 import { error } from 'console';
@@ -14,29 +13,22 @@ export class UsuariosService {
 
   constructor(private readonly databaseService : DatabaseService){}
 
-  async create(createUsuario: CreateUsuarioDto) : Promise<ResponseDto<usuario>>{
+  async create(createUsuario: CreateUsuarioDto) : Promise<ResponseUsuariosDto>{
     try {
-      const usuario = await this.databaseService.usuario.create(
-        {  data: createUsuario }
-      );
-
-      if(createUsuario.rol == TiposUsuario.administrador){
-        await this.databaseService.admin.create({
-          data: { id_usuario : usuario.id_usuario   }
-        })
-      }else if(createUsuario.rol == TiposUsuario.ayudante){
-        await this.databaseService.ayudante.create({
-          data: { id_usuario: usuario.id_usuario    }
-        })
-      } else{
-        throw new HttpException('Rol no válido', HttpStatus.BAD_REQUEST);
+      
+      if(!this.userExists(createUsuario.rut)){
+        throw new HttpException('Usuario ya existente', HttpStatus.BAD_REQUEST);
       }
 
-      const response : ResponseDto<usuario> = {
-        statusCode : HttpStatus.CREATED,
+      const user = await this.databaseService.usuario.create({data: createUsuario});
+
+      const { password:_, ...userWithoutPassword } = user;
+
+      const response: ResponseUsuariosDto = {
         message: 'Usuario creado con exito',
-        data : usuario,
-      };
+        statusCode: HttpStatus.OK,
+        data: userWithoutPassword
+      }
 
       return response;
 
@@ -68,7 +60,7 @@ export class UsuariosService {
     }
   
 
-  async update(id_user: number, updateUsuario: UpdateUsuarioDto) : Promise<ResponseDto<usuario>> {
+  async update(id_user: number, updateUsuario: UpdateUsuarioDto) : Promise<ResponseUsuariosDto> {
     try {
       const actUsuario = await this.databaseService.usuario.update(
         {
@@ -77,10 +69,11 @@ export class UsuariosService {
         }
       )
 
-      const response : ResponseDto<usuario> = {
+      const { password:_, ...userWithoutPassword } = actUsuario;
+      const response : ResponseUsuariosDto = {
         statusCode : HttpStatus.OK,
         message : 'Usuario actualizado',
-        data : actUsuario,
+        data : userWithoutPassword,
       }
 
       return response
@@ -89,32 +82,16 @@ export class UsuariosService {
     }
   }
 
-  async remove(id_usuario: number) {
+  async remove(rut: string) {
     try {
-      const findUser = await this.databaseService.usuario.findUnique({
-        where: { id_usuario : id_usuario }
-      });
 
-      // Borrar usuario si es ayudante o administrador
-      if (await this.databaseService.admin.findUnique({
-        where: { id_usuario : findUser.id_usuario }
-      })){
-        this.databaseService.admin.delete({
-          where : { id_usuario : findUser.id_usuario }
-        })
-      }else if(await this.databaseService.ayudante.findUnique({
-        where : { id_usuario : findUser.id_usuario }
-      })){
-        this.databaseService.ayudante.delete({
-          where : { id_usuario : findUser.id_usuario }
-        })
-      }else{
-        throw new HttpException('Error, usuario no existe', HttpStatus.BAD_REQUEST);
-      };
-
+      if(!this.userExists(rut)){
+        throw new HttpException('Usuario no existe', HttpStatus.BAD_REQUEST);
+      }
+    
       // remover usuario
       const removeUser = await this.databaseService.usuario.delete({
-        where : {id_usuario : id_usuario}
+        where : {rut : rut}
       })
 
       const response = {
@@ -129,13 +106,32 @@ export class UsuariosService {
     }
   }
 
-  async verAyudantes() {
-    const manyAyudantes : ayudante[] =  await this.databaseService.ayudante.findMany({
-      include: {
-        Usuario: true,
-      }
-    });
+  async verAyudantes() : Promise<usuario[]> {
 
-    return manyAyudantes;
+    try{
+      const manyAyudantes : usuario[] =  await this.databaseService.usuario.findMany({
+        where:{
+          rol: roles.AYUDANTE
+        }
+      })
+  
+      return manyAyudantes;
+    } catch(error){
+      throw new HttpException('Error obtener ayudantes', HttpStatus.BAD_REQUEST);
+    }
   }
+
+  private async userExists(rut: string){
+    
+    const user = await this.databaseService.usuario.findUnique(
+      {where : { rut: rut}}
+    );
+
+    if(!user){
+      return false;
+    };
+    return true;
+  }
+
+
 }
