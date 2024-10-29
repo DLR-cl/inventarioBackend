@@ -4,7 +4,6 @@ import { UpdateRecursoDto } from './dto/update-recurso.dto';
 import { DatabaseService } from '../database/database/database.service';
 import { Prisma, recurso } from '@prisma/client';
 import { ResponseDto } from './dto/response.dto';
-import { RecursoEntity } from './entities/recurso.entity';
 @Injectable()
 export class RecursosService {
   constructor(private readonly databaseService : DatabaseService){}
