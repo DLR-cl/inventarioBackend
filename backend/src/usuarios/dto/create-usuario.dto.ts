@@ -11,10 +11,6 @@ export class CreateUsuarioDto {
     @IsString()
     @IsNotEmpty()
     usuario : string
-    
-    @IsString()
-    @IsNotEmpty()
-    apellido : string;
 
     @IsString()
     @IsNotEmpty()
