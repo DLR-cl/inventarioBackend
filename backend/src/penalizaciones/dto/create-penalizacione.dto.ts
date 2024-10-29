@@ -4,13 +4,9 @@ import { IsEnum, IsNotEmpty, IsNumber, IsString, IsBoolean} from "class-validato
 export class CreatePenalizacioneDto {
 
     @IsNotEmpty()
-    @IsNumber()
-    grado: number;
-    
-    @IsNotEmpty()
     @IsEnum(grados_sancion)
-    id_sanciones: grados_sancion; 
-
+    grado: grados_sancion;
+    
     @IsNotEmpty()
     @IsString()
     comentario: string;
