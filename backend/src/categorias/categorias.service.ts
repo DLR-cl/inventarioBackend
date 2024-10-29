@@ -25,7 +25,7 @@ export class CategoriasService {
 
       const newcategoria = await this.databaseService.categoria.create({
         data : {
-          fecha_creacion : createCategoria.fecha_creacion,
+          fecha_creacion : new Date(createCategoria.fecha_creacion),
           nombre_categoria : createCategoria.nombre_categoria
         },
       })
