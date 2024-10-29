@@ -21,6 +21,7 @@ export class CreateRecursoDto {
   @IsNotEmpty()
   @IsString()
   fecha_ingreso: string;
+  
 
   @IsNotEmpty()
   @IsNumber()
