@@ -10,7 +10,7 @@ export class CategoriasController {
   constructor(private readonly categoriasService: CategoriasService) {}
 
   @Post()
-  async create(@Body() createCategoria: CreateCategoriaDto) : Promise<ResponseDto<CreateCategoriaDto>> {
+  async create(@Body() createCategoria: CreateCategoriaDto) : Promise<any> {
     return await this.categoriasService.create(createCategoria)
   }
 
