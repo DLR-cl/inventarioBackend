@@ -9,7 +9,7 @@ import { sanciones } from '@prisma/client';
 export class PenalizacionesService {
 
   constructor(private readonly databaseService : DatabaseService){}
-  create(createPenalizacioneDto: sanciones) {
+  create(createPenalizacioneDto: CreatePenalizacioneDto) {
     try{
       this.databaseService.sanciones.create({data : createPenalizacioneDto })
 

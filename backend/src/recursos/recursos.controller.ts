@@ -20,9 +20,14 @@ export class RecursosController {
     return this.recursosService.findAll();
   }
 
-  @Get('/prestamos/:id')
-  async findAllRecursosEnPrestamo(@Param('id') id : string){
-    return await this.recursosService.todosPrestamosRecurso(id);
+  @Get('/prestamos_especiales')
+  async getPrestamosEspecialesFromResource(id_dici: string){
+    return await this.recursosService.getPrestamosEspecialFromResource(id_dici);
+  }
+
+  @Get('/prestamos_regulares')
+  async getPrestamosRegularFromResource(id_dici: string){
+    return await this.recursosService.getPrestamosRegularFromResource(id_dici);
   }
 
   @Get('/disponibles_categoria/:id')

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsDate, IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class CreatePrestamoEspecialDto {
     
@@ -8,5 +8,17 @@ export class CreatePrestamoEspecialDto {
 
     @IsNotEmpty()
     @IsString()
-    motivo : string
+    motivo : string;
+
+    @IsNotEmpty()
+    @IsNumber()
+    id_usuario: number;
+    @IsNotEmpty()
+    @IsString()
+    id_dici: string;
+
+    @IsNotEmpty()
+    @IsDate()
+    fecha_inicio: Date;
+
 }

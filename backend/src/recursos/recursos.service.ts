@@ -2,9 +2,8 @@ import { HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { CreateRecursoDto } from './dto/create-recurso.dto';
 import { UpdateRecursoDto } from './dto/update-recurso.dto';
 import { DatabaseService } from '../database/database/database.service';
-import { prestamo, Prisma, recurso } from '@prisma/client';
+import { Prisma, recurso } from '@prisma/client';
 import { ResponseDto } from './dto/response.dto';
-import { RecursoEntity } from './entities/recurso.entity';
 @Injectable()
 export class RecursosService {
   constructor(private readonly databaseService : DatabaseService){}
@@ -86,17 +85,32 @@ export class RecursosService {
 }
 
   // devuelve todos los prestamos en los que aparece el recurso
-  async todosPrestamosRecurso(id_uta : string) : Promise<prestamo[]>{
+  async getPrestamosRegularFromResource(id_dici: string){
     try {
-      const todosPrestamos = await this.databaseService.prestamo.findMany({
-        where:{
-          id_dici: id_uta,
+      const prestamo_regular = await this.databaseService.regular.findMany({
+        where:
+        {
+          id_dici: id_dici
         }
       });
 
-      return todosPrestamos;
-    }catch(error){
-      throw new HttpException('Error al obtener todos los prestamos en los que aparece el recurso', HttpStatus.BAD_REQUEST);
+      return prestamo_regular;
+    } catch (error) {
+      throw new HttpException('error al obtener todos los prestamos regulares del recurso', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async getPrestamosEspecialFromResource(id_dici: string){
+    try {
+      const prestamos_especial = await this.databaseService.especial.findMany({
+        where: {
+          id_dici: id_dici
+        }
+      });
+
+      return prestamos_especial;
+    } catch (error) {
+      
     }
   }
 
@@ -114,5 +128,6 @@ export class RecursosService {
       throw new HttpException('Error al obtener todos los recursos activos de categoria', HttpStatus.BAD_REQUEST);
     }
   }
+
 
 }
