@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreatePrestamoEspecialDto } from './dto/create-prestamo_especial.dto';
 import { UpdatePrestamoEspecialDto } from './dto/update-prestamo_especial.dto';
 import { DatabaseService } from '../database/database/database.service';
@@ -74,15 +74,10 @@ export class PrestamoEspecialService {
 
   private async changeStateResource(id_dici: string){
     
-    const recurso = await this.databaseService.recurso.findUnique({
-      where:{
-        id_dici: id_dici
-      }
-    });
-
-    if(!recurso.estado_recurso){
-      return false;
-    }
+    if(this.isResourceFree(id_dici)){
+      throw new BadRequestException('El recurso ya está siendo utilizado');
+    };
+    
     const changeRecurso = await this.databaseService.recurso.update({
       where: {
         id_dici: id_dici,
@@ -93,5 +88,18 @@ export class PrestamoEspecialService {
     });
 
     return true;
+  }
+
+  private async isResourceFree(id_dici: string){
+    const resoure = await this.databaseService.recurso.findUnique({
+      where: {
+        id_dici: id_dici,
+      }
+    });
+
+    if(!resoure.estado_recurso){
+      return true;
+    }
+    return false;
   }
 }

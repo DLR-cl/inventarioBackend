@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreatePrestamoRegularDto } from './dto/create-prestamo_regular.dto';
 import { UpdatePrestamoRegularDto } from './dto/update-prestamo_regular.dto';
 import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
@@ -15,6 +15,11 @@ export class PrestamoRegularService {
 
   async create(createPrestamoRegular: CreatePrestamoRegularDto) : Promise<responsePrestamoRegular> {
       try {
+
+        if(!this.isResourceFree(createPrestamoRegular.id_dici)){
+          throw new BadRequestException('Error, recurso no está libre');
+        }
+
         const create_regular = await this.databaseService.regular.create({
           data : createPrestamoRegular
         });
@@ -112,5 +117,22 @@ export class PrestamoRegularService {
         rut: rut
       }
     });
+  }
+
+  private async isResourceFree(id_dici: string){
+    
+    const resource = await this.databaseService.recurso.findUnique({
+      where: {
+        id_dici: id_dici,
+      }
+    });
+    
+    if(resource.estado_recurso){
+      return true;
+    }
+
+    return false;
+
+    
   }
 }
