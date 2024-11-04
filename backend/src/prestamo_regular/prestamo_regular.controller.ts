@@ -18,19 +18,20 @@ export class PrestamoRegularController {
     return this.prestamoRegularService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.prestamoRegularService.findOne(+id);
-  }
-
   @Get('/activos')
   getActivos(){
     return this.prestamoRegularService.obtenerPrestamosActivos();
   };
 
+  
   @Get('/finalizados')
   getFinalizados(){
     return this.prestamoRegularService.obtenerPrestamosFinalizados();
+  }
+  
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.prestamoRegularService.findOne(+id);
   }
 
   @Patch('/finalizar-prestamo')
