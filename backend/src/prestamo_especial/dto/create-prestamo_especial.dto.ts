@@ -8,9 +8,6 @@ export class CreatePrestamoEspecialDto {
 
     @IsNotEmpty()
     @IsString()
-<<<<<<< Updated upstream
-    motivo : string
-=======
     motivo : string;
 
     @IsNotEmpty()
@@ -29,5 +26,4 @@ export class CreatePrestamoEspecialDto {
     @IsString()
     rut_estudiante: string
 
->>>>>>> Stashed changes
 }

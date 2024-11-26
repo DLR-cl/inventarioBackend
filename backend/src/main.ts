@@ -3,10 +3,6 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-<<<<<<< Updated upstream
-  const app = await NestFactory.create(AppModule, {cors : true});
-  await app.listen(3306);
-=======
   const app = await NestFactory.create(AppModule);
   app.enableCors(
     {
@@ -21,6 +17,5 @@ async function bootstrap() {
     }
   ));
   await app.listen(3000);
->>>>>>> Stashed changes
 }
 bootstrap();

@@ -1,19 +1,14 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreatePrestamoRegularDto } from './dto/create-prestamo_regular.dto';
 import { UpdatePrestamoRegularDto } from './dto/update-prestamo_regular.dto';
 import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
 import { DatabaseService } from '../database/database/database.service';
-<<<<<<< Updated upstream
-import { regular } from '@prisma/client';
-import { ResponseDto } from '../recursos/dto/response.dto';
-=======
 import { grados_sancion, regular, sanciones } from '@prisma/client';
 import { ResponseDto } from '../recursos/dto/response.dto';
 import { responsePrestamoRegular } from './dto/responde.dto';
 import { FinPrestamoDto } from './dto/fin-prestamo-dto';
 import { TiempoSancionDto } from './dto/tiempo-sancion.dto';
 import { calcularFechaSemestral } from 'src/auth/lib/functions';
->>>>>>> Stashed changes
 
 @Injectable()
 export class PrestamoRegularService {
@@ -56,10 +51,6 @@ export class PrestamoRegularService {
     return `This action returns a #${id} prestamoRegular`;
   }
 
-<<<<<<< Updated upstream
-  update(id: number, updatePrestamoRegularDto: UpdatePrestamoRegularDto) {
-    return `This action updates a #${id} prestamoRegular`;
-=======
   async finalizarPrestamo(finPrestamo: FinPrestamoDto) {
     try {
 
@@ -86,14 +77,11 @@ export class PrestamoRegularService {
     } catch (error) {
       
     }
->>>>>>> Stashed changes
   }
   
   remove(id: number) {
     return `This action removes a #${id} prestamoRegular`;
   }
-<<<<<<< Updated upstream
-=======
 
   private pasoUnDia(date_ini: Date, date_fin: Date): boolean {
     const diffInMs = Math.abs(date_fin.getTime() - date_ini.getTime());
@@ -234,5 +222,4 @@ export class PrestamoRegularService {
     
 
   }
->>>>>>> Stashed changes
 }
