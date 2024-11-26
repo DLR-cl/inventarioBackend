@@ -1,22 +1,19 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { grados_sancion } from "@prisma/client";
+import { IsEnum, IsNotEmpty, IsNumber, IsString, IsBoolean} from "class-validator";
 
 export class CreatePenalizacioneDto {
 
     @IsNotEmpty()
-    @IsNumber()
-    grado: number;
+    @IsEnum(grados_sancion)
+    grado: grados_sancion;
     
-    @IsNotEmpty()
-    @IsNumber()
-    id_sanciones: number; 
-
     @IsNotEmpty()
     @IsString()
     comentario: string;
 
     @IsNotEmpty()
-    @IsString()
-    estado_sancion: string;
+    @IsBoolean()
+    estado_sancion: boolean;
 
     @IsNotEmpty()
     @IsNumber()

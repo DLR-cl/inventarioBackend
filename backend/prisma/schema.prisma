@@ -21,6 +21,7 @@ model ayudante {
 }
 
 model especial {
+  id_prestamo Int      @id @default(autoincrement())
   descripcion String  @db.VarChar(1000)
   motivo      String  @db.VarChar(1000)
   id_prestamo Int      @id
@@ -45,19 +46,9 @@ model especial {
 >>>>>>> Stashed changes
 
   @@index([id_usuario], map: "id_usuario")
-}
-
-model prestamo {
-  id_prestamo         Int                  @id @default(autoincrement())
-  fecha_inicio        DateTime            @db.Date
-  fecha_fin           DateTime?            @db.Date
-  id_dici             String              @db.VarChar(20)
-  especial            especial?
-  recursos            recurso? @relation(fields: [id_dici], references: [id_dici], onDelete: NoAction, onUpdate: NoAction, map: "prestamo_ibfk_1")
-  regular             regular?
-
   @@index([id_dici], map: "id_dici")
 }
+
 
 model regular {
 <<<<<<< Updated upstream
@@ -66,19 +57,21 @@ model regular {
   id_prestamo Int         @id
   rut         String     @db.VarChar(12)
   id_usuario  Int
-  prestamo    prestamo    @relation(fields: [id_prestamo], references: [id_prestamo], onDelete: NoAction, onUpdate: NoAction, map: "regular_ibfk_1")
-  Estudiante  estudiante? @relation(fields: [rut], references: [rut], onDelete: NoAction, onUpdate: NoAction, map: "regular_ibfk_2")
-  ayudante    ayudante?   @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "regular_ibfk_3")
+  id_dici     String    @db.VarChar(30)
+  recursos    recurso    @relation(fields: [id_dici], references: [id_dici], onDelete: NoAction, onUpdate: NoAction, map: "regular_ibfk_1")
+  Estudiante  estudiante @relation(fields: [rut], references: [rut], onDelete: NoAction, onUpdate: NoAction, map: "regular_ibfk_2")
+  user    usuario   @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "regular_ibfk_3")
 
   @@index([id_usuario], map: "id_usuario")
   @@index([rut], map: "rut")
+  @@index([id_dici], map:"id_dici")
 }
 
 model sanciones {
-  grado          Int
+  grado          grados_sancion
   id_sanciones   Int         @id @default(autoincrement())
   comentario     String      @db.VarChar(1000)
-  estado_sancion String      @db.VarChar(9)
+  estado_sancion Boolean      
   id_usuario     Int
   rut            String      @db.VarChar(12)
   Usuario        usuario?    @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "sanciones_ibfk_1")
@@ -133,23 +126,23 @@ model estudiante {
 <<<<<<< Updated upstream
   nombre          String     @db.VarChar(100)
   rut               String      @id @db.VarChar(12)
-  correo            String?     @db.VarChar(50)
-  direccion         String?     @db.VarChar(60)
-  fono              String?     @db.VarChar(9)
-  ingreso           Int?
-  estado_estudiante String?     @db.VarChar(9)
+  correo            String     @db.VarChar(50)
+  direccion         String     @db.VarChar(60)
+  fono              String     @db.VarChar(9)
+  ingreso           Int
+  estado_estudiante String     @db.VarChar(9)
   regular           regular[]
   sanciones         sanciones[]
 }
 
 model recurso {
   nombre              String                @db.VarChar(200)
-  marca               String?               @db.VarChar(50)
-  descripcion         String?               @db.VarChar(3000)
-  fecha_ingreso       DateTime?             @db.Date
+  marca               String               @db.VarChar(50)
+  descripcion         String?                @db.VarChar(3000)
+  fecha_ingreso       DateTime             @db.DateTime
   modelo              String?               @db.VarChar(50)
   estado_recurso      Boolean               @default(true)
-  id_categoria        Int?
+  id_categoria        Int
   id_dici        String    @id @db.VarChar(20)
   id_uta         String?     @db.VarChar(20)
   ubicacion      String?    @db.VarChar(500)
@@ -194,9 +187,8 @@ model usuario {
   usuario    String     @db.VarChar(30)
   correo     String     @db.VarChar(50)
   password   String     @db.VarChar(30)
-  rut        String     @db.VarChar(12)
-  admin      admin?
-  ayudante   ayudante?
+  rut        String     @unique @db.VarChar(12)
+  rol        roles     
   sanciones  sanciones[]
 }
 =======

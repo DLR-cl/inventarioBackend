@@ -20,10 +20,8 @@ export class PrestamoRegularService {
 
   constructor(private readonly databaseService : DatabaseService){}
 
-  async create(createPrestamoRegular: CreatePrestamoRegularDto) {
+  async create(createPrestamoRegular: CreatePrestamoRegularDto) : Promise<responsePrestamoRegular> {
       try {
-
-        // como el prestamo generico se encarga de cambiar el estado del recurso, solo se crea el prestamo regular.
         const create_regular = await this.databaseService.regular.create({
           data : {
             ...createPrestamoRegular,
@@ -33,8 +31,8 @@ export class PrestamoRegularService {
         
         this.changeStateSource(createPrestamoRegular.id_dici);
 
-        const response : ResponseDto<regular> = {
-          statusCode : HttpStatus.OK,
+        const response : responsePrestamoRegular = {
+          status : HttpStatus.OK,
           message : 'Prestamo regular creado con éxito',
           data : create_regular
         };
@@ -90,7 +88,7 @@ export class PrestamoRegularService {
     }
 >>>>>>> Stashed changes
   }
-
+  
   remove(id: number) {
     return `This action removes a #${id} prestamoRegular`;
   }

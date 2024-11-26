@@ -1,5 +1,6 @@
 import { IsBoolean, IsEnum, isNotEmpty, IsNotEmpty, IsString } from "class-validator";
 import { TiposUsuario } from "../enums/tiposUsuarios.enum";
+import { roles } from "@prisma/client";
 
 export class CreateUsuarioDto {
 
@@ -19,7 +20,7 @@ export class CreateUsuarioDto {
         @IsNotEmpty()
         rut : string;
 
-    @IsEnum(TiposUsuario)
+    @IsEnum(roles)
     @IsNotEmpty()
-    rol : TiposUsuario;
+    rol : roles;
 }

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, isNumber, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, isNumber, IsString, IsDate } from "class-validator";
 
 export class CreateCategoriaDto {
 
