@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { PenalizacionesService } from './penalizaciones.service';
 import { CreatePenalizacioneDto } from './dto/create-penalizacione.dto';
 import { UpdatePenalizacioneDto } from './dto/update-penalizacione.dto';
+import { AuthGuard } from '../auth/guards/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('penalizaciones')
 export class PenalizacionesController {
   constructor(private readonly penalizacionesService: PenalizacionesService) {}

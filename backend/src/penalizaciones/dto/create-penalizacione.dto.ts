@@ -24,5 +24,5 @@ export class CreatePenalizacioneDto {
 
     @IsNotEmpty()
     @IsString()
-    rut: string;
+    rut_estudiante: string;
 }

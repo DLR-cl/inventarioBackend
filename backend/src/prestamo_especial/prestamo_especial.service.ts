@@ -4,9 +4,33 @@ import { UpdatePrestamoEspecialDto } from './dto/update-prestamo_especial.dto';
 
 @Injectable()
 export class PrestamoEspecialService {
-  create(createPrestamoEspecialDto: CreatePrestamoEspecialDto) {
-    return 'This action adds a new prestamoEspecial';
+
+  constructor(
+    private readonly databaseService: DatabaseService
+  ){}
+
+
+  async create(prestamo_especial: CreatePrestamoEspecialDto) {
+    try {
+      if(!this.changeStateResource(prestamo_especial.id_dici)){
+        throw new HttpException('El recurso ya se encuentra ocupado', HttpStatus.BAD_REQUEST);
+      }
+
+      const prestamoEspecial = await this.databaseService.especial.create({
+        data: {
+            ...prestamo_especial,
+            estado: true,
+            
+        }
+      })
+
+      return prestamoEspecial;
+
+    } catch (error) {
+      throw new HttpException('Error al crear un prestamo', HttpStatus.BAD_REQUEST);
+    }
   }
+
 
   findAll() {
     return `This action returns all prestamoEspecial`;

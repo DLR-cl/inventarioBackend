@@ -14,14 +14,8 @@ export class EstudiantesService {
       console.log('hola');
       const nuevoEstudiante  = await this.databaseService.estudiante.create({
         data : {
-          nombre : createEstudiante.nombre,
-          rut : createEstudiante.rut,
-          fono: createEstudiante.fono,
-          correo : createEstudiante.correo,
-          direccion : createEstudiante.direccion,
-          estado_estudiante : createEstudiante.estado_estudiante,
-          ingreso : createEstudiante.ingreso
-
+          ...createEstudiante,
+          estado: true,
         }
       })
 
@@ -52,8 +46,16 @@ export class EstudiantesService {
     });
   }
 
-  update(id: number, updateEstudianteDto: UpdateEstudianteDto) {
-    return `This action updates a #${id} estudiante`;
+  public async getHistorialEstudiantes(){
+    const historialPrestamos = await this.databaseService.estudiante.findMany({
+      include:{
+        especial: true,
+        regular: true,
+      },
+      where: {
+        
+      }
+    })
   }
 
   remove(id: number) {

@@ -4,9 +4,10 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
+  url      = env("LOCAL_DATABASE_URL")
 }
 
+<<<<<<< Updated upstream
 model admin {
   id_usuario Int        @id
   Usuario    usuario    @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "admin_ibfk_1")
@@ -26,6 +27,22 @@ model especial {
   id_usuario  Int?
   prestamo    prestamo @relation(fields: [id_prestamo], references: [id_prestamo], onDelete: NoAction, onUpdate: NoAction, map: "especial_ibfk_1")
   admin       admin?   @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "especial_ibfk_2")
+=======
+model especial {
+  id_prestamo    Int       @id @default(autoincrement())
+  descripcion    String    @db.VarChar(1000)
+  motivo         String    @db.VarChar(1000)
+  id_usuario     Int
+  estado        Boolean
+  id_dici        String    @db.VarChar(30)
+  fecha_inicio   DateTime  @db.Date()
+  fecha_fin      DateTime? @db.Date()
+  rut_estudiante String    @db.VarChar(12)
+
+  estudiante estudiante @relation(fields: [rut_estudiante], references: [rut])
+  admin      usuario    @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "especial_ibfk_2")
+  recursos   recurso    @relation(fields: [id_dici], references: [id_dici], onDelete: NoAction, onUpdate: NoAction, map: "especial_ibfk_3")
+>>>>>>> Stashed changes
 
   @@index([id_usuario], map: "id_usuario")
 }
@@ -43,6 +60,7 @@ model prestamo {
 }
 
 model regular {
+<<<<<<< Updated upstream
   hora_inicio DateTime     @db.Date
   hora_fin    DateTime?     @db.Date
   id_prestamo Int         @id
@@ -65,19 +83,54 @@ model sanciones {
   rut            String      @db.VarChar(12)
   Usuario        usuario?    @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "sanciones_ibfk_1")
   Estudiante     estudiante? @relation(fields: [rut], references: [rut], onDelete: NoAction, onUpdate: NoAction, map: "sanciones_ibfk_2")
+=======
+  id_prestamo Int        @id @default(autoincrement())
+  hora_inicio DateTime   @db.DateTime
+  hora_fin    DateTime?  @db.DateTime
+  estado      Boolean
+  rut         String     @db.VarChar(12)
+  id_usuario  Int
+  id_dici     String     @db.VarChar(30)
+  recursos    recurso    @relation(fields: [id_dici], references: [id_dici], onDelete: NoAction, onUpdate: NoAction, map: "regular_ibfk_1")
+  Estudiante  estudiante @relation(fields: [rut], references: [rut], onDelete: NoAction, onUpdate: NoAction, map: "regular_ibfk_2")
+  user        usuario    @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "regular_ibfk_3")
 
   @@index([id_usuario], map: "id_usuario")
   @@index([rut], map: "rut")
+  @@index([id_dici], map: "id_dici")
+}
+
+model sanciones {
+  grado          grados_sancion
+  id_sanciones   Int            @id @default(autoincrement())
+  comentario     String         @db.VarChar(1000)
+  estado_sancion Boolean
+  id_usuario     Int
+  fecha_inicio   DateTime       @db.DateTime()
+  fecha_final    DateTime       @db.DateTime()
+  rut_estudiante String         @db.VarChar(12)
+  Usuario        usuario        @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "sanciones_ibfk_1")
+  Estudiante     estudiante     @relation(fields: [rut_estudiante], references: [rut], onDelete: NoAction, onUpdate: NoAction, map: "sanciones_ibfk_2")
+>>>>>>> Stashed changes
+
+  @@index([id_usuario], map: "id_usuario")
+  @@index([rut_estudiante], map: "rut_estudiante")
 }
 
 model categoria {
   id_categoria     Int       @id @default(autoincrement())
+<<<<<<< Updated upstream
   nombre_categoria String   @db.VarChar(50) @unique
   fecha_creacion   String?   @db.VarChar(50)
+=======
+  nombre_categoria String    @unique @db.VarChar(50)
+  fecha_creacion   DateTime  @db.Date()
+>>>>>>> Stashed changes
   recurso          recurso[]
 }
 
 model estudiante {
+<<<<<<< Updated upstream
   nombre          String     @db.VarChar(100)
   rut               String      @id @db.VarChar(12)
   correo            String?     @db.VarChar(50)
@@ -102,10 +155,40 @@ model recurso {
   ubicacion      String?    @db.VarChar(500)
   categoria           categoria?            @relation(fields: [id_categoria], references: [id_categoria], onDelete: NoAction, onUpdate: NoAction, map: "recurso_ibfk_1")
   prestamo       prestamo[]
+=======
+  nombre    String      @db.VarChar(100)
+  rut       String      @id @db.VarChar(12)
+  correo    String      @db.VarChar(50)
+  direccion String      @db.VarChar(60)
+  fono      String      @db.VarChar(9)
+  ingreso   Int
+  estado    Boolean     @default(true)
+  regular   regular[]
+  especial  especial[]
+  sanciones sanciones[]
+}
+
+model recurso {
+  nombre         String     @db.VarChar(200)
+  marca          String     @db.VarChar(50)
+  descripcion    String?    @db.VarChar(3000)
+  fecha_ingreso  DateTime   @db.DateTime
+  modelo         String?    @db.VarChar(50)
+  estado_recurso Boolean    @default(true)
+  id_categoria   Int
+  id_dici        String     @id @db.VarChar(20)
+  id_uta         String?    @db.VarChar(20)
+  ubicacion      String?    @db.VarChar(500)
+  categoria      categoria  @relation(fields: [id_categoria], references: [id_categoria], onDelete: NoAction, onUpdate: NoAction, map: "recurso_ibfk_1")
+  regular        regular[]
+  especial       especial[]
+
+>>>>>>> Stashed changes
   @@index([id_categoria], map: "id_categoria")
 }
 
 model usuario {
+<<<<<<< Updated upstream
   id_usuario Int         @id @default(autoincrement())
   nombre     String     @db.VarChar(100)
   usuario    String     @db.VarChar(30)
@@ -116,3 +199,27 @@ model usuario {
   ayudante   ayudante?
   sanciones  sanciones[]
 }
+=======
+  id_usuario     Int         @id @default(autoincrement())
+  nombre         String      @db.VarChar(100)
+  usuario        String      @db.VarChar(30)
+  correo         String      @db.VarChar(50)
+  password       String      @db.VarChar(200)
+  rut            String      @unique @db.VarChar(12)
+  rol            roles
+  estado         Boolean     @default(true)
+  sanciones      sanciones[]
+  prest_regular  regular[]
+  prest_especial especial[]
+}
+
+enum roles {
+  AYUDANTE
+  ADMIN
+}
+
+enum grados_sancion {
+  GRAVE
+  LEVE
+}
+>>>>>>> Stashed changes

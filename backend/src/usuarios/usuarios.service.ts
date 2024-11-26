@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { DatabaseService } from '../database/database/database.service';
@@ -8,6 +8,7 @@ import { Prisma } from '@prisma/client';
 import { promises } from 'dns';
 import { TiposUsuario } from './enums/tiposUsuarios.enum';
 import { error } from 'console';
+import { compare, encrypt } from 'src/auth/lib/bcrypt';
 
 @Injectable()
 export class UsuariosService {
@@ -45,7 +46,55 @@ export class UsuariosService {
     }
   }
 
+  public async changePassword(id_user: number, old_password: string, new_password: string){
+    try {
 
+      const verify_user = await this.databaseService.usuario.findUnique({
+        where: {
+          id_usuario: id_user
+        }
+      });
+
+      if(!verify_user){
+        throw new BadRequestException('No existe usuario');
+      }
+
+
+      const isAuthorized = compare(old_password, verify_user.password);
+
+      if(!isAuthorized){
+        throw new UnauthorizedException('Contraseña incorrecta');
+      }
+
+      const hashedPassword = await encrypt(new_password);
+      const changePasswordUser = await this.databaseService.usuario.update({
+        where: {
+          id_usuario: id_user,
+        },
+        data: {
+          password: hashedPassword,
+        }
+      });
+
+      const response: ResponseUsuariosDto = {
+        message: 'Usuario contraseña actualizada',
+        statusCode: HttpStatus.OK,
+        data: { ...changePasswordUser }
+      }
+
+      return response;
+    } catch (error) {
+      if(error instanceof UnauthorizedException){
+        throw error;
+      }else if(error instanceof BadRequestException){
+        throw error;
+      }
+      throw new InternalServerErrorException('Error interno al cambiar la contraseña')
+    }
+  }
+
+
+  
   async findAll() {
     try {
       return await this.databaseService.usuario.findMany();
