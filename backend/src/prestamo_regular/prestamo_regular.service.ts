@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreatePrestamoRegularDto } from './dto/create-prestamo_regular.dto';
 import { UpdatePrestamoRegularDto } from './dto/update-prestamo_regular.dto';
 import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
@@ -9,6 +9,7 @@ import { responsePrestamoRegular } from './dto/responde.dto';
 import { FinPrestamoDto } from './dto/fin-prestamo-dto';
 import { TiempoSancionDto } from './dto/tiempo-sancion.dto';
 import { calcularFechaSemestral } from 'src/auth/lib/functions';
+import internal from 'stream';
 
 @Injectable()
 export class PrestamoRegularService {
@@ -219,7 +220,35 @@ export class PrestamoRegularService {
       return tiempo;
     }
 
-    
+  }
+  public async obtenerPrestamosActivos(){
+      try {
+          const prestamos = await this.databaseService.regular.findMany({
+            where: {
+              hora_fin: null,
+            }
+          }
+          );
 
+          return prestamos;
+      } catch (error) {
+        throw new InternalServerErrorException('Error interno al obtener los prestamos activos');
+      }
+  }
+
+  public async obtenerPrestamosFinalizados(){
+    try {
+      const prestamos = await this.databaseService.regular.findMany({
+        where: {
+          NOT: {
+            hora_fin: null
+          }
+        }
+      });
+
+      return prestamos;
+    } catch (error) {
+      throw new InternalServerErrorException('Error interno al obtener los prestamos finalizados');
+    }
   }
 }

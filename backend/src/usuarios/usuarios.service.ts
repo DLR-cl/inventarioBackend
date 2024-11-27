@@ -21,7 +21,11 @@ export class UsuariosService {
         throw new HttpException('Usuario ya existente', HttpStatus.BAD_REQUEST);
       }
 
-      const user = await this.databaseService.usuario.create({data: createUsuario});
+      const hashedPassword = await encrypt(createUsuario.rut);
+      const user = await this.databaseService.usuario.create({data: 
+        {...createUsuario,
+          password: hashedPassword,
+        }});
 
       const { password:_, ...userWithoutPassword } = user;
 
