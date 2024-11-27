@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { UsuariosService } from './usuarios.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
-import { UpdateUsuarioDto } from './dto/update-usuario.dto';
+import { ChangePassword, UpdateUsuarioDto } from './dto/update-usuario.dto';
 
 @Controller('usuarios')
 export class UsuariosController {
@@ -35,5 +35,10 @@ export class UsuariosController {
   @Delete(':rut')
   remove(@Param('rut') rut: string) {
     return this.usuariosService.remove(rut);
+  }
+
+  @Patch('change-password')
+  public async changePassword(dto: ChangePassword){
+    return await this.usuariosService.changePassword(dto.usuario_id, dto.old_password, dto.new_password);
   }
 }
