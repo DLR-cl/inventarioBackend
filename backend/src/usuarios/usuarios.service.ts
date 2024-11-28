@@ -56,7 +56,7 @@ export class UsuariosService {
       }
 
 
-      const isAuthorized = compare(old_password, verify_user.password);
+      const isAuthorized = await compare(old_password, verify_user.password);
 
       if(!isAuthorized){
         throw new UnauthorizedException('Contraseña incorrecta');

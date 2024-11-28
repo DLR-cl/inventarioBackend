@@ -10,14 +10,20 @@ import { FinPrestamoDto } from './dto/fin-prestamo-dto';
 import { TiempoSancionDto } from './dto/tiempo-sancion.dto';
 import { calcularFechaSemestral } from 'src/auth/lib/functions';
 import internal from 'stream';
+import { EstudiantesService } from 'src/estudiantes/estudiantes.service';
 
 @Injectable()
 export class PrestamoRegularService {
 
-  constructor(private readonly databaseService : DatabaseService){}
+  constructor(
+    private readonly databaseService : DatabaseService,
+    private readonly _alumnoService: EstudiantesService,
+  ){}
 
   async create(createPrestamoRegular: CreatePrestamoRegularDto) : Promise<responsePrestamoRegular> {
       try {
+
+
         const create_regular = await this.databaseService.regular.create({
           data : {
             ...createPrestamoRegular,

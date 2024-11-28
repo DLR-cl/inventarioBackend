@@ -3,6 +3,7 @@ import { PenalizacionesService } from './penalizaciones.service';
 import { CreatePenalizacioneDto } from './dto/create-penalizacione.dto';
 import { UpdatePenalizacioneDto } from './dto/update-penalizacione.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
+import { grados_sancion } from '@prisma/client';
 
 @UseGuards(AuthGuard)
 @Controller('penalizaciones')
@@ -32,5 +33,11 @@ export class PenalizacionesController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.penalizacionesService.remove(+id);
+  }
+
+  @Get('obtener-penalizaciones:grado')
+  public async getPenalizacionesByGrado(@Param('grado') grado: string){
+    const enumGrado: grados_sancion = <grados_sancion>grado;
+    return await this.penalizacionesService.findAllByGrado(enumGrado);
   }
 }

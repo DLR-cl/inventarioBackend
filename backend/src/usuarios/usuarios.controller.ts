@@ -23,11 +23,16 @@ export class UsuariosController {
     return this.usuariosService.findOne(+id);
   }
 
-  @Get('/ayudantes')
+  @Get('ayudantes')
   getAllAyudantes(){
     return this.usuariosService.verAyudantes();
   }
-  @Patch(':id')
+  @Patch('change-password')
+  public async changePassword(dto: ChangePassword){
+    return await this.usuariosService.changePassword(dto.usuario_id, dto.old_password, dto.new_password);
+  }
+
+  @Patch('actualizar-usuario/:id')
   update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
     return this.usuariosService.update(+id, updateUsuarioDto);
   }
@@ -37,8 +42,4 @@ export class UsuariosController {
     return this.usuariosService.remove(rut);
   }
 
-  @Patch('change-password')
-  public async changePassword(dto: ChangePassword){
-    return await this.usuariosService.changePassword(dto.usuario_id, dto.old_password, dto.new_password);
-  }
 }

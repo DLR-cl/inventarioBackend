@@ -82,17 +82,18 @@ export class PenalizacionesService {
     }
   }
 
-  async findAllLeves() {
+  async findAllByGrado(grado: grados_sancion) {
     try {
-      const leves: sanciones[] = await this.databaseService.sanciones.findMany({
+      if(!(grado in grados_sancion)){
+        throw new BadRequestException('Grado no reconocido');
+      }
+      const sancionesGrado: sanciones[] = await this.databaseService.sanciones.findMany({
         where: {
-          grado: grados_sancion.LEVE
+          grado: grado
         }
       });
-      if (!leves) {
-        throw new BadRequestException('No hay sanciones Leves');
-      }
-      return leves
+
+      return sancionesGrado;
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
@@ -102,25 +103,7 @@ export class PenalizacionesService {
     }
   }
 
-  async findAllGraves() {
-    try {
-      const graves: sanciones[] = await this.databaseService.sanciones.findMany({
-        where: {
-          grado: grados_sancion.GRAVE
-        }
-      });
-      if (!graves) {
-        throw new BadRequestException('No hay sanciones Leves');
-      }
-      return graves
-    } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw error;
-      } else {
-        throw new HttpException('Internal Error Server', HttpStatus.BAD_GATEWAY);
-      }
-    }
-  }
+ 
 
   public async findAll(){
     return await this.databaseService.sanciones.findMany();
