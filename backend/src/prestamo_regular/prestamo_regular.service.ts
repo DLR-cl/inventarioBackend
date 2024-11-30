@@ -1,16 +1,12 @@
 import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { CreatePrestamoRegularDto } from './dto/create-prestamo_regular.dto';
-import { UpdatePrestamoRegularDto } from './dto/update-prestamo_regular.dto';
-import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
-import { DatabaseService } from '../database/database/database.service';
+import { CreatePrestamoRegularDto } from './dto/create-prestamo_regular.dto.js';
+import { DatabaseService } from '../database/database/database.service.js';
 import { grados_sancion, regular, sanciones } from '@prisma/client';
-import { ResponseDto } from '../recursos/dto/response.dto';
-import { responsePrestamoRegular } from './dto/responde.dto';
-import { FinPrestamoDto } from './dto/fin-prestamo-dto';
-import { TiempoSancionDto } from './dto/tiempo-sancion.dto';
-import { calcularFechaSemestral } from 'src/auth/lib/functions';
-import internal from 'stream';
-import { EstudiantesService } from 'src/estudiantes/estudiantes.service';
+import { responsePrestamoRegular } from './dto/responde.dto.js';
+import { FinPrestamoDto } from './dto/fin-prestamo-dto.js';
+import { TiempoSancionDto } from './dto/tiempo-sancion.dto.js';
+import { calcularFechaSemestral } from '../auth/lib/functions.js';
+import { EstudiantesService } from '../estudiantes/estudiantes.service.js';
 
 @Injectable()
 export class PrestamoRegularService {
@@ -225,6 +221,8 @@ export class PrestamoRegularService {
       }
       return tiempo;
     }
+
+    return null;
 
   }
   public async obtenerPrestamosActivos(){

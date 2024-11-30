@@ -10,7 +10,6 @@ export class CreateEstudianteDto {
     @IsNotEmpty()
     nombre: string
 
-
     @IsString()
     @IsNotEmpty()
     direccion: string;

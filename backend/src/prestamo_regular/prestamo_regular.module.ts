@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { PrestamoRegularService } from './prestamo_regular.service';
-import { PrestamoRegularController } from './prestamo_regular.controller';
-import { DatabaseModule } from 'src/database/database/database.module';
-import { EstudiantesModule } from 'src/estudiantes/estudiantes.module';
+import { PrestamoRegularService } from './prestamo_regular.service.js';
+import { PrestamoRegularController } from './prestamo_regular.controller.js';
+import { DatabaseModule } from '../database/database/database.module.js';
+import { EstudiantesModule } from '../estudiantes/estudiantes.module.js';
 
 @Module({
   controllers: [PrestamoRegularController],

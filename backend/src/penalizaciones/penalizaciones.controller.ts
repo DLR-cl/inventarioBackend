@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
-import { PenalizacionesService } from './penalizaciones.service';
-import { CreatePenalizacioneDto } from './dto/create-penalizacione.dto';
-import { UpdatePenalizacioneDto } from './dto/update-penalizacione.dto';
-import { AuthGuard } from '../auth/guards/auth.guard';
+import { PenalizacionesService } from './penalizaciones.service.js';
+import { CreatePenalizacioneDto } from './dto/create-penalizacione.dto.js';
+import { UpdatePenalizacioneDto } from './dto/update-penalizacione.dto.js';
+import { AuthGuard } from '../auth/guards/auth.guard.js';
 import { grados_sancion } from '@prisma/client';
 
 @UseGuards(AuthGuard)

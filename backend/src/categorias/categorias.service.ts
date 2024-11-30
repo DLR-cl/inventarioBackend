@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateCategoriaDto } from './dto/create-categoria.dto';
-import { UpdateCategoriaDto } from './dto/update-categoria.dto';
-import { DatabaseService } from '../database/database/database.service';
-import { ResponseDto } from './dto/response.dto';
-import { Categoria } from './entities/categoria.entity';
+import { CreateCategoriaDto } from './dto/create-categoria.dto.js';
+import { UpdateCategoriaDto } from './dto/update-categoria.dto.js';
+import { DatabaseService } from '../database/database/database.service.js';
+import { ResponseDto } from './dto/response.dto.js';
+import { Categoria } from './entities/categoria.entity.js';
 import { categoria, recurso} from '@prisma/client';
 import { promises } from 'dns';
 

@@ -1,10 +1,9 @@
 import { BadRequestException, HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreatePenalizacioneDto } from './dto/create-penalizacione.dto';
-import { UpdatePenalizacioneDto } from './dto/update-penalizacione.dto';
-import { Penalizacione } from './entities/penalizacione.entity';
-import { DatabaseService } from '../database/database/database.service';
+import { CreatePenalizacioneDto } from './dto/create-penalizacione.dto.js';
+import { UpdatePenalizacioneDto } from './dto/update-penalizacione.dto.js';
+import { DatabaseService } from '../database/database/database.service.js';
 import { grados_sancion, sanciones } from '@prisma/client';
-import { calcularFechaSemestral } from 'src/auth/lib/functions';
+import { calcularFechaSemestral } from '../auth/lib/functions.js';
 import { Cron } from '@nestjs/schedule';
 
 @Injectable()

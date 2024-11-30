@@ -1,13 +1,13 @@
 import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
-import { CreateUsuarioDto } from './dto/create-usuario.dto';
-import { UpdateUsuarioDto } from './dto/update-usuario.dto';
-import { DatabaseService } from '../database/database/database.service';
-import { ResponseUsuariosDto } from './dto/response.dto';
+import { CreateUsuarioDto } from './dto/create-usuario.dto.js';
+import { UpdateUsuarioDto } from './dto/update-usuario.dto.js';
+import { DatabaseService } from '../database/database/database.service.js';
+import { ResponseUsuariosDto } from './dto/response.dto.js';
 import { Prisma, roles, usuario } from '@prisma/client';
 import { promises } from 'dns';
-import { TiposUsuario } from './enums/tiposUsuarios.enum';
+import { TiposUsuario } from './enums/tiposUsuarios.enum.js';
 import { error } from 'console';
-import { compare, encrypt } from 'src/auth/lib/bcrypt';
+import { compare, encrypt } from '../auth/lib/bcrypt.js';
 
 @Injectable()
 export class UsuariosService {

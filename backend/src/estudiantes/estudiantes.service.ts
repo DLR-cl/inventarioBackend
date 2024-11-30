@@ -1,13 +1,32 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateEstudianteDto } from './dto/create-estudiante.dto';
 import { UpdateEstudianteDto } from './dto/update-estudiante.dto';
-import { DatabaseService } from '../database/database/database.service';
+import { DatabaseService } from '../database/database/database.service.js';
 import { ResponseDto } from './dto/response.dto';
+import * as csv from 'csv-parse';
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
+import { CellValue, Row, Worksheet } from 'exceljs';
 
 @Injectable()
 export class EstudiantesService {
 
   constructor(private readonly databaseService : DatabaseService){}
+
+  format(data:Worksheet): Array<Record<string, unknown>> {
+    const list: string[][] = [];
+    data.eachRow((row: Row) => {
+      list.push([...(row.values as CellValue[])].splice(1) as string[]);
+    });
+    if(!list.length){
+      return [];
+    }
+    const [fields, ...values] = list;
+    return values.map((valuesItem) => (fields as string[]).reduce (
+      (acc, field, index) => Object.assign(acc, { [field]: valuesItem[index]}), {},
+    ),
+  );
+  }
 
   async create(createEstudiante: CreateEstudianteDto) : Promise<ResponseDto<CreateEstudianteDto>> {
     try {

@@ -1,8 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { PrestamoRegularService } from './prestamo_regular.service';
-import { CreatePrestamoRegularDto } from './dto/create-prestamo_regular.dto';
-import { UpdatePrestamoRegularDto } from './dto/update-prestamo_regular.dto';
-import { FinPrestamoDto } from './dto/fin-prestamo-dto';
+import { PrestamoRegularService } from './prestamo_regular.service.js';
+import { CreatePrestamoRegularDto } from './dto/create-prestamo_regular.dto.js';
+import { FinPrestamoDto } from './dto/fin-prestamo-dto.js';
 
 @Controller('prestamo-regular')
 export class PrestamoRegularController {

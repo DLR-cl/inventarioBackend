@@ -1,9 +1,9 @@
 import { HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateRecursoDto } from './dto/create-recurso.dto';
-import { UpdateRecursoDto } from './dto/update-recurso.dto';
-import { DatabaseService } from '../database/database/database.service';
+import { CreateRecursoDto } from './dto/create-recurso.dto.js';
+import { UpdateRecursoDto } from './dto/update-recurso.dto.js';
+import { DatabaseService } from '../database/database/database.service.js';
 import { Prisma, recurso } from '@prisma/client';
-import { ResponseDto } from './dto/response.dto';
+import { ResponseDto } from './dto/response.dto.js';
 @Injectable()
 export class RecursosService {
   constructor(private readonly databaseService : DatabaseService){}
@@ -120,7 +120,7 @@ export class RecursosService {
 
       return prestamos_especial;
     } catch (error) {
-      
+      throw error;
     }
   }
 

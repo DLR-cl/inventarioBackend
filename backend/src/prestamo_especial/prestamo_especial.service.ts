@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreatePrestamoEspecialDto } from './dto/create-prestamo_especial.dto';
-import { UpdatePrestamoEspecialDto } from './dto/update-prestamo_especial.dto';
-import { DatabaseService } from '../database/database/database.service';
+import { CreatePrestamoEspecialDto } from './dto/create-prestamo_especial.dto.js';
+import { UpdatePrestamoEspecialDto } from './dto/update-prestamo_especial.dto.js';
+import { DatabaseService } from '../database/database/database.service.js';
 import { responsePrestamoEspecial } from './dto/response.dto';
 
 @Injectable()

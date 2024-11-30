@@ -1,12 +1,11 @@
 import { BadRequestException, HttpException, HttpStatus, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
-import { AuthPayloadDto } from './dto/auth.dto';
-import { DatabaseService } from '../database/database/database.service';
+import { AuthPayloadDto } from './dto/auth.dto.js';
+import { DatabaseService } from '../database/database/database.service.js';
 import { usuario } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
-import { jwtConstant } from './lib/jwt-constants';
+import { jwtConstant } from './lib/jwt-constants.js';
 import { access } from 'fs';
-import { createUserDto } from './dto/create-user.dto';
-import { compare } from './lib/bcrypt';
+import { compare } from './lib/bcrypt.js';
 
 @Injectable()
 export class AuthService {

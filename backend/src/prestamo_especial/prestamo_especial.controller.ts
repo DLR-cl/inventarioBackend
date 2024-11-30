@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { PrestamoEspecialService } from './prestamo_especial.service';
-import { CreatePrestamoEspecialDto } from './dto/create-prestamo_especial.dto';
-import { UpdatePrestamoEspecialDto } from './dto/update-prestamo_especial.dto';
+import { PrestamoEspecialService } from './prestamo_especial.service.js';
+import { CreatePrestamoEspecialDto } from './dto/create-prestamo_especial.dto.js';
+import { UpdatePrestamoEspecialDto } from './dto/update-prestamo_especial.dto.js';
 
 @Controller('prestamo-especial')
 export class PrestamoEspecialController {
