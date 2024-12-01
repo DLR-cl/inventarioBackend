@@ -26,8 +26,4 @@ export class CreateEstudianteDto {
     @IsString()
     @IsOptional()
     correo: string
-
-    @IsBoolean()
-    @IsOptional()
-    estado_estudiante: boolean;
 }

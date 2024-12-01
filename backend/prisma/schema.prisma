@@ -70,8 +70,8 @@ model categoria {
 model estudiante {
   nombre    String      @db.VarChar(100)
   rut       String      @id @db.VarChar(12)
-  correo    String      @db.VarChar(50)
-  direccion String      @db.VarChar(60)
+  correo    String      @db.VarChar(100)
+  direccion String      @db.VarChar(300)
   fono      String      @db.VarChar(9)
   ingreso   Int
   estado    Boolean     @default(true)

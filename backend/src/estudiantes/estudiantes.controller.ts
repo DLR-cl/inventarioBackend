@@ -26,7 +26,8 @@ export class EstudiantesController {
     }),
   )
   public async masiveCreateEstudiantes(@UploadedFile() data: {worksheet: Worksheet}){
-      return await this.estudiantesService.format(data.worksheet);
+      const dataFormat = this.estudiantesService.format(data.worksheet);
+      return dataFormat;
   }
 
   @Get()
