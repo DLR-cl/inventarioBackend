@@ -33,7 +33,7 @@ export class PrestamoRegularController {
     return this.prestamoRegularService.findOne(+id);
   }
 
-  @Patch('/finalizar-prestamo')
+  @Patch('finalizar-prestamo')
   finalizarPrestamo(@Body() finPrestamo: FinPrestamoDto){
     return this.prestamoRegularService.finalizarPrestamo(finPrestamo);
   }

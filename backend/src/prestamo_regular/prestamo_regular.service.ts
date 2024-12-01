@@ -41,6 +41,7 @@ export class PrestamoRegularService {
         if(error instanceof BadRequestException){
           throw error;
         }else{
+          console.log(error);
           throw new HttpException('Interval Server error', HttpStatus.BAD_GATEWAY);
         }
       }
@@ -78,7 +79,7 @@ export class PrestamoRegularService {
         }
       });
     } catch (error) {
-      
+      throw error;
     }
   }
   
@@ -87,7 +88,9 @@ export class PrestamoRegularService {
   }
 
   private pasoUnDia(date_ini: Date, date_fin: Date): boolean {
-    const diffInMs = Math.abs(date_fin.getTime() - date_ini.getTime());
+    const dateFin = new Date(date_fin);
+    const dateIni = new Date(date_ini);
+    const diffInMs = Math.abs(dateFin.getTime() - dateIni.getTime());
 
     const convertDay = 24 * 60 * 60 * 1000;
     return diffInMs >= convertDay;
@@ -96,7 +99,7 @@ export class PrestamoRegularService {
   private async generateSancion(id_usuario: number, rut: string){
 
     const defFecha:TiempoSancionDto = await this.setTimeSancion(rut);
-
+    console.log(defFecha);
     if(defFecha.grado_sancion == grados_sancion.GRAVE){
 
       const sancion = await this.databaseService.sanciones.create({
@@ -169,8 +172,9 @@ export class PrestamoRegularService {
 
     });
 
+    // sanciones leves duran todo el semestre
     const fecha_inicio = new Date()
-    if(!findSancion){
+    if(findSancion.length == 0){
       return {
         fecha_inicio: fecha_inicio,
         fecha_termino: calcularFechaSemestral(fecha_inicio),
@@ -212,6 +216,7 @@ export class PrestamoRegularService {
     }
 
     if(cont_graves > 1){
+      // determina castigo durante todo el semestre
       const fecha_termino = calcularFechaSemestral(fecha_inicio);
 
       const tiempo: TiempoSancionDto = {

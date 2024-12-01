@@ -167,7 +167,12 @@ export class PenalizacionesService {
     return sancion;
   }
   update(id: number, updatePenalizacioneDto: UpdatePenalizacioneDto) {
-    return `This action updates a #${id} penalizacione`;
+    return this.databaseService.sanciones.update({
+      where: {
+        id_sanciones: id,
+      },
+      data: updatePenalizacioneDto
+    });
   }
 
   remove(id: number) {
