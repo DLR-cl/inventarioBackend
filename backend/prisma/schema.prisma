@@ -15,7 +15,7 @@ model especial {
   estado        Boolean
   id_dici        String    @db.VarChar(30)
   fecha_inicio   DateTime  @db.Date()
-  fecha_fin      DateTime? @db.Date()
+  fecha_fin      DateTime @db.Date()
   rut_estudiante String    @db.VarChar(12)
 
   estudiante estudiante @relation(fields: [rut_estudiante], references: [rut])
@@ -90,7 +90,7 @@ model recurso {
   id_categoria   Int
   id_dici        String     @id @db.VarChar(20)
   id_uta         String?    @db.VarChar(20)
-  ubicacion      String?    @db.VarChar(500)
+  ubicacion      String    @db.VarChar(500)
   categoria      categoria  @relation(fields: [id_categoria], references: [id_categoria], onDelete: NoAction, onUpdate: NoAction, map: "recurso_ibfk_1")
   regular        regular[]
   especial       especial[]

@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreatePrestamoEspecialDto } from './dto/create-prestamo_especial.dto.js';
 import { UpdatePrestamoEspecialDto } from './dto/update-prestamo_especial.dto.js';
 import { DatabaseService } from '../database/database/database.service.js';
@@ -20,8 +20,8 @@ export class PrestamoEspecialService {
 
       const prestamoEspecial = await this.databaseService.especial.create({
         data: {
-            ...prestamo_especial,
-            estado: true,
+          ...prestamo_especial,
+          estado: true,
             
         }
       })
@@ -33,13 +33,54 @@ export class PrestamoEspecialService {
     }
   }
 
+  public async finalizarPrestamoEspecial(id: number){
+    try {
+      const exist = this.findOne(id);
 
-  findAll() {
-    return `This action returns all prestamoEspecial`;
+      const updatePrestamo = await this.databaseService.especial.update({
+        where: {
+          id_prestamo: id,
+          estado: true,
+        },
+        data: {
+          estado: false,
+        }
+      })
+
+      return {
+        message: 'Prestamo finalizado con éxito',
+        statusCode: HttpStatus.OK,
+        data: updatePrestamo,
+      }
+    } catch (error) {
+      throw error;
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} prestamoEspecial`;
+  public async findAll() {
+    return await this.databaseService.especial.findMany();
+  }
+
+  public async findOne(id: number) {
+    try {
+      const exists = await this.databaseService.especial.findUnique({
+        where: {
+          id_prestamo: id,
+        }
+      });
+
+      if(!exists){
+        throw new BadRequestException('Error prestamo no encontrado');
+      }
+
+      return exists;
+    } catch (error) {
+      if(error instanceof BadRequestException){
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Error interno al encontrar un prestamo especial');
+    }
   }
 
   async update(id: number, updatePrestamoEspecialDto: UpdatePrestamoEspecialDto) {

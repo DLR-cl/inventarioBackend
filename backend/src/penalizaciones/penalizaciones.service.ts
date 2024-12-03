@@ -1,4 +1,4 @@
-import { BadRequestException, HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpCode, HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreatePenalizacioneDto } from './dto/create-penalizacione.dto.js';
 import { UpdatePenalizacioneDto } from './dto/update-penalizacione.dto.js';
 import { DatabaseService } from '../database/database/database.service.js';
@@ -97,7 +97,7 @@ export class PenalizacionesService {
       if (error instanceof BadRequestException) {
         throw error;
       } else {
-        throw new HttpException('Internal Error Server', HttpStatus.BAD_GATEWAY);
+        throw new HttpException('Internal Error Server', HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }
   }
@@ -144,7 +144,6 @@ export class PenalizacionesService {
         const fechaTermino = new Date(penalizacion.fecha_final);
         if(fecha_actual < fechaTermino){
           const sancion = this.finalizarSancion(penalizacion.id_sanciones);
-          console.log('Penalizacion finalizada');
         }
       })
 
@@ -166,16 +165,44 @@ export class PenalizacionesService {
 
     return sancion;
   }
-  update(id: number, updatePenalizacioneDto: UpdatePenalizacioneDto) {
-    return this.databaseService.sanciones.update({
-      where: {
-        id_sanciones: id,
-      },
-      data: updatePenalizacioneDto
-    });
+  public async update(id: number, updatePenalizacioneDto: UpdatePenalizacioneDto) {
+    try {
+
+
+      const sancion = this.findOne(id);
+
+      return await this.databaseService.sanciones.update({
+        where: {
+          id_sanciones: id,
+        },
+        data: updatePenalizacioneDto
+      });
+
+    } catch (error) {
+      if(error instanceof BadRequestException){
+        throw error;
+      }
+      throw new InternalServerErrorException('Error al finalizar una penalización');
+    }
+
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} penalizacione`;
+  public async remove(id: number) {
+    try {
+      const sancion = await this.findOne(id);
+      const remove = await this.databaseService.sanciones.delete({
+        where: {
+          id_sanciones: id,
+        }
+      });
+
+      return {
+        message: 'sancion borrada con éxito',
+        statusCode: HttpStatus.OK,
+        object: sancion
+      }
+    } catch (error) {
+      throw new InternalServerErrorException('Error interno al borrar la penalización')
+    }
   }
 }

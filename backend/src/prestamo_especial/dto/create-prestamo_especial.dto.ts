@@ -23,6 +23,10 @@ export class CreatePrestamoEspecialDto {
     fecha_inicio: Date;
 
     @IsNotEmpty()
+    @IsDate()
+    fecha_fin: Date;
+
+    @IsNotEmpty()
     @IsString()
     rut_estudiante: string
 
