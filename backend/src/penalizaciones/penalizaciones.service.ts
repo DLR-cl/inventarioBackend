@@ -88,6 +88,7 @@ export class PenalizacionesService {
 
         const contLeves = await this.databaseService.sanciones.count({
           where: {
+            rut_estudiante: createPenalizacioneDto.rut_estudiante,
             estado_sancion: true,
             grado: grados_sancion.LEVE
           }
