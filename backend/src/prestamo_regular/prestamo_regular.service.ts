@@ -19,7 +19,16 @@ export class PrestamoRegularService {
   async create(createPrestamoRegular: CreatePrestamoRegularDto) : Promise<responsePrestamoRegular> {
       try {
 
+        const estudiante = await this.databaseService.estudiante.findUnique({
+          where: {
+            rut: createPrestamoRegular.rut,
+          }
+        });
 
+        if(!estudiante.estado){
+          throw new BadRequestException('Estudiante deshabilitado para prestamo');
+        }
+        
         const create_regular = await this.databaseService.regular.create({
           data : {
             ...createPrestamoRegular,
