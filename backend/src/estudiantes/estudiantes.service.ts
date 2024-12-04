@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateEstudianteDto } from './dto/create-estudiante.dto';
 import { UpdateEstudianteDto } from './dto/update-estudiante.dto';
 import { DatabaseService } from '../database/database/database.service.js';
@@ -7,6 +7,7 @@ import * as csv from 'csv-parse';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { CellValue, Row, Worksheet } from 'exceljs';
+import e from 'express';
 
 @Injectable()
 export class EstudiantesService {
@@ -148,5 +149,37 @@ export class EstudiantesService {
   }
   remove(id: number) {
     return `This action removes a #${id} estudiante`;
+  }
+
+  public async actualizarEstudiante(rut: string, estudiante: UpdateEstudianteDto){
+    try {
+      const student = await this.databaseService.estudiante.findUnique({
+        where: {
+          rut: rut,
+        }
+      });
+      if(!student){
+        throw new BadRequestException('Estudiante a actualizar no existe');
+      }
+
+      const updateStudent = await this.databaseService.estudiante.update({
+        where: {
+          rut: rut,
+        },
+        data: UpdateEstudianteDto,
+      })
+
+      return {
+        message: 'estudiante actualizado',
+        statusCode: HttpStatus.OK,
+        object: updateStudent
+      }
+    } catch (error) {
+      if(error instanceof BadRequestException){
+        throw error;
+      }  
+
+      throw new InternalServerErrorException('Error interno al actualizar un estudiante');
+    }
   }
 }

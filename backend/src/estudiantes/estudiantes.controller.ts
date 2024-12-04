@@ -5,6 +5,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage, Multer } from 'multer';
 import { CvsOrXlsxMulterEngine } from '../shared/multer/multerStorageEngine.js';
 import { Worksheet } from 'exceljs';
+import { UpdateEstudianteDto } from './dto/update-estudiante.dto.js';
 
 const MAX_FILE_SIZE_IN_MiB = 1024*1024*20;
 @Controller('estudiantes')
@@ -50,5 +51,10 @@ export class EstudiantesController {
   @Get('activos')
   public async obtenerEstudiantesActivos(){
     return await this.estudiantesService.obtenerCantidadEstudiantesActivos();
+  }
+
+  @Patch(':rut')
+  public async actualizarEstudiante(@Param('rut') rut: string, @Body() estudiante: UpdateEstudianteDto){
+    return await this.actualizarEstudiante(rut, estudiante);
   }
 }
