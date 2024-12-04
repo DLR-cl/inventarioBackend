@@ -5,7 +5,6 @@ import { UpdatePenalizacioneDto } from './dto/update-penalizacione.dto.js';
 import { AuthGuard } from '../auth/guards/auth.guard.js';
 import { grados_sancion } from '@prisma/client';
 
-@UseGuards(AuthGuard)
 @Controller('penalizaciones')
 export class PenalizacionesController {
   constructor(private readonly penalizacionesService: PenalizacionesService) {}
@@ -39,5 +38,15 @@ export class PenalizacionesController {
   public async getPenalizacionesByGrado(@Param('grado') grado: string){
     const enumGrado: grados_sancion = <grados_sancion>grado;
     return await this.penalizacionesService.findAllByGrado(enumGrado);
+  }
+
+  @Get('estudiante-cantidad/:rut')
+  public async obtenerPenalizacionesByEstudiante(@Param('rut') rut: string){
+    return await this.penalizacionesService.obtenerCantidadSancionesActivasPorEstudiante(rut);
+  }
+
+  @Get('activos')
+  public async obtenerPenalizacionesActivas(){
+    return await this.penalizacionesService.obtenerPenalizacionesActivas();
   }
 }

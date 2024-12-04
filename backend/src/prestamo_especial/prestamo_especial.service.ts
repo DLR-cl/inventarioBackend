@@ -66,6 +66,9 @@ export class PrestamoEspecialService {
       const exists = await this.databaseService.especial.findUnique({
         where: {
           id_prestamo: id,
+        },
+        include: {
+          estudiante: true,
         }
       });
 
@@ -137,5 +140,27 @@ export class PrestamoEspecialService {
     });
 
     return true;
+  }
+
+  public async obtenerPrestamosActivos(){
+    return await this.databaseService.especial.findMany({
+      where: {
+        estado: true,
+      },
+      include: {
+        estudiante: true,
+      }
+    })
+  }
+
+  public async obtenerHistorial(){
+    return await this.databaseService.especial.findMany({
+      where: {
+        estado: false,
+      },
+      include: {
+        estudiante: true,
+      }
+    })
   }
 }

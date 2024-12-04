@@ -46,4 +46,9 @@ export class EstudiantesController {
   remove(@Param('id') id: string) {
     return this.estudiantesService.remove(+id);
   }
+
+  @Get('activos')
+  public async obtenerEstudiantesActivos(){
+    return await this.estudiantesService.obtenerCantidadEstudiantesActivos();
+  }
 }

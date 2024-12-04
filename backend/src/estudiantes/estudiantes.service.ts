@@ -153,6 +153,13 @@ export class EstudiantesService {
     })
   }
 
+  public async obtenerCantidadEstudiantesActivos(){
+    return await this.databaseService.estudiante.findMany({
+      where: {
+        estado: true,
+      }
+    })
+  }
   remove(id: number) {
     return `This action removes a #${id} estudiante`;
   }
