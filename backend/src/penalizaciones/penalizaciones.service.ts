@@ -48,6 +48,16 @@ export class PenalizacionesService {
               rut_estudiante: createPenalizacioneDto.rut_estudiante,
             }
           });
+
+          const deactivateAlumno = await this.databaseService.estudiante.update({
+            where:
+            {
+              rut: createPenalizacioneDto.rut_estudiante,
+            },
+            data: {
+              estado: false,
+            }
+          });
           
         }else{
           const fecha_termino = new Date(fecha_inicio);
@@ -64,17 +74,51 @@ export class PenalizacionesService {
               rut_estudiante: createPenalizacioneDto.rut_estudiante,
             }
           });
+
+          const deactivateAlumno = await this.databaseService.estudiante.update({
+            where:
+            {
+              rut: createPenalizacioneDto.rut_estudiante,
+            },
+            data: {
+              estado: false,
+            }
+          });
         }
 
-        const deactivateAlumno = await this.databaseService.estudiante.update({
-          where:
-          {
-            rut: createPenalizacioneDto.rut_estudiante,
-          },
-          data: {
-            estado: false,
+        const contLeves = await this.databaseService.sanciones.count({
+          where: {
+            estado_sancion: true,
+            grado: grados_sancion.LEVE
           }
         });
+        if(contLeves == 3){
+          const deactivateAlumno = await this.databaseService.estudiante.update({
+            where:
+            {
+              rut: createPenalizacioneDto.rut_estudiante,
+            },
+            data: {
+              estado: false,
+            }
+          });
+
+          const fecha_termino = new Date(fecha_inicio);
+          fecha_termino.setDate(fecha_termino.getDate()+7);
+          
+          const sancion = await this.databaseService.sanciones.create({
+            data: {
+              grado: createPenalizacioneDto.grado,
+              comentario: createPenalizacioneDto.comentario,
+              estado_sancion: true,
+              id_usuario: createPenalizacioneDto.id_usuario,
+              fecha_inicio: fecha_inicio,
+              fecha_final: fecha_termino,
+              rut_estudiante: createPenalizacioneDto.rut_estudiante,
+            }
+          });
+        }
+
       }
       return {
         message: 'sancion creada con éxito',
