@@ -15,6 +15,41 @@ export class PenalizacionesService {
       const fecha_inicio = new Date();
       if (createPenalizacioneDto.grado == grados_sancion.LEVE) {
 
+        const contLeves = await this.databaseService.sanciones.count({
+          where: {
+            rut_estudiante: createPenalizacioneDto.rut_estudiante,
+            estado_sancion: true,
+            grado: grados_sancion.LEVE
+          }
+        });
+
+        if(contLeves == 3){
+          const deactivateAlumno = await this.databaseService.estudiante.update({
+            where:
+            {
+              rut: createPenalizacioneDto.rut_estudiante,
+            },
+            data: {
+              estado: false,
+            }
+          });
+  
+          const fecha_termino = new Date(fecha_inicio);
+          fecha_termino.setDate(fecha_termino.getDate()+7);
+          
+          const sancion = await this.databaseService.sanciones.create({
+            data: {
+              grado: createPenalizacioneDto.grado,
+              comentario: 'Acumulación de faltas leves',
+              estado_sancion: true,
+              id_usuario: createPenalizacioneDto.id_usuario,
+              fecha_inicio: fecha_inicio,
+              fecha_final: fecha_termino,
+              rut_estudiante: createPenalizacioneDto.rut_estudiante,
+            }
+          });
+        }
+        
         const sancion = await this.databaseService.sanciones.create({
           data: {
             grado: createPenalizacioneDto.grado,
@@ -86,40 +121,9 @@ export class PenalizacionesService {
           });
         }
       }
-      const contLeves = await this.databaseService.sanciones.count({
-        where: {
-          rut_estudiante: createPenalizacioneDto.rut_estudiante,
-          estado_sancion: true,
-          grado: grados_sancion.LEVE
-        }
-      });
-      
-      if(contLeves == 3){
-        const deactivateAlumno = await this.databaseService.estudiante.update({
-          where:
-          {
-            rut: createPenalizacioneDto.rut_estudiante,
-          },
-          data: {
-            estado: false,
-          }
-        });
 
-        const fecha_termino = new Date(fecha_inicio);
-        fecha_termino.setDate(fecha_termino.getDate()+7);
-        
-        const sancion = await this.databaseService.sanciones.create({
-          data: {
-            grado: createPenalizacioneDto.grado,
-            comentario: 'Acumulación de faltas leves',
-            estado_sancion: true,
-            id_usuario: createPenalizacioneDto.id_usuario,
-            fecha_inicio: fecha_inicio,
-            fecha_final: fecha_termino,
-            rut_estudiante: createPenalizacioneDto.rut_estudiante,
-          }
-        });
-      }
+      
+
       return {
         message: 'sancion creada con éxito',
         statusCode: HttpStatus.OK
