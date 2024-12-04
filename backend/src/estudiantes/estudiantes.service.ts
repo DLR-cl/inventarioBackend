@@ -180,7 +180,7 @@ export class EstudiantesService {
         where: {
           rut: rut,
         },
-        data: UpdateEstudianteDto,
+        data: estudiante,
       })
 
       return {

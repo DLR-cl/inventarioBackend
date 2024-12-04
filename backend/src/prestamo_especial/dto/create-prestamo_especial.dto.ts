@@ -19,12 +19,12 @@ export class CreatePrestamoEspecialDto {
     id_dici: string;
 
     @IsNotEmpty()
-    @IsDate()
-    fecha_inicio: Date;
+    @IsString()
+    fecha_inicio: string;
 
     @IsNotEmpty()
-    @IsDate()
-    fecha_fin: Date;
+    @IsString()
+    fecha_fin: string;
 
     @IsNotEmpty()
     @IsString()

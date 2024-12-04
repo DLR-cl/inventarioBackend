@@ -17,6 +17,7 @@ export class EstudiantesController {
     return this.estudiantesService.create(createEstudianteDto);
   }
 
+  
   @Post('carga_masiva')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -53,8 +54,10 @@ export class EstudiantesController {
     return await this.estudiantesService.obtenerCantidadEstudiantesActivos();
   }
 
+  
   @Patch(':rut')
   public async actualizarEstudiante(@Param('rut') rut: string, @Body() estudiante: UpdateEstudianteDto){
-    return await this.actualizarEstudiante(rut, estudiante);
+    return await this.estudiantesService.actualizarEstudiante(rut, estudiante);
   }
+
 }

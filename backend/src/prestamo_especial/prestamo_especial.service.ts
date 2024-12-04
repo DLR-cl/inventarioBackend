@@ -11,11 +11,22 @@ export class PrestamoEspecialService {
     private readonly databaseService: DatabaseService
   ){}
 
-
   async create(prestamo_especial: CreatePrestamoEspecialDto) {
     try {
-      if(!this.changeStateResource(prestamo_especial.id_dici)){
+
+      const existRecursoOcupado = await this.changeStateResource(prestamo_especial.id_dici)
+      if(! existRecursoOcupado){
         throw new HttpException('El recurso ya se encuentra ocupado', HttpStatus.BAD_REQUEST);
+      }
+
+      const existStudent = await this.databaseService.estudiante.findUnique({
+        where: {
+          rut: prestamo_especial.rut_estudiante,
+        }
+      }) 
+
+      if(!existStudent){
+        throw new HttpException('Estudiante no encontrado', HttpStatus.BAD_REQUEST);
       }
 
       const prestamoEspecial = await this.databaseService.especial.create({
@@ -29,6 +40,10 @@ export class PrestamoEspecialService {
       return prestamoEspecial;
 
     } catch (error) {
+      if(error instanceof HttpException){
+        throw error;
+      }
+
       throw new HttpException('Error al crear un prestamo', HttpStatus.BAD_REQUEST);
     }
   }
@@ -57,8 +72,31 @@ export class PrestamoEspecialService {
     }
   }
 
-  public async findAll() {
-    return await this.databaseService.especial.findMany();
+  public async findAll(page: number, limit: number) {
+    if(page < 1){
+      page = 1;
+    }
+    if(limit < 1){
+      limit = 10;
+    }
+
+    const skip = (page - 1) * limit;
+
+    const totalRecords = await this.databaseService.especial.count();
+
+    const totalPages = Math.ceil(totalRecords / limit);
+
+    const data = await this.databaseService.especial.findMany({
+      skip,
+      take: +limit,
+    });
+
+    return {
+      data,
+      totalPages,
+      totalRecords,
+      currentPage: page,
+    };
   }
 
   public async findOne(id: number) {
@@ -121,11 +159,17 @@ export class PrestamoEspecialService {
 
   private async changeStateResource(id_dici: string){
     
+
+
     const recurso = await this.databaseService.recurso.findUnique({
       where:{
         id_dici: id_dici
       }
     });
+
+    if(!recurso){
+      throw new HttpException('Recurso no encontrado', HttpStatus.BAD_REQUEST);
+    }
 
     if(!recurso.estado_recurso){
       return false;

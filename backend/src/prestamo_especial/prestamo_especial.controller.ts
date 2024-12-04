@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { PrestamoEspecialService } from './prestamo_especial.service.js';
 import { CreatePrestamoEspecialDto } from './dto/create-prestamo_especial.dto.js';
 import { UpdatePrestamoEspecialDto } from './dto/update-prestamo_especial.dto.js';
@@ -13,8 +13,8 @@ export class PrestamoEspecialController {
   }
 
   @Get()
-  findAll() {
-    return this.prestamoEspecialService.findAll();
+  findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
+    return this.prestamoEspecialService.findAll(page, limit);
   }
 
   @Get(':id')
