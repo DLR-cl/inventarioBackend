@@ -32,6 +32,8 @@ export class PenalizacionesService {
         const existGrave = await this.databaseService.sanciones.findMany({
           where: {
             rut_estudiante: createPenalizacioneDto.rut_estudiante,
+            grado: grados_sancion.GRAVE,
+            estado_sancion: true,
           }
         })
         if(existGrave){
@@ -46,6 +48,7 @@ export class PenalizacionesService {
               rut_estudiante: createPenalizacioneDto.rut_estudiante,
             }
           });
+          
         }else{
           const fecha_termino = new Date(fecha_inicio);
           fecha_termino.setDate(fecha_termino.getDate()+7);
@@ -72,10 +75,11 @@ export class PenalizacionesService {
             estado: false,
           }
         });
-
-
       }
-
+      return {
+        message: 'sancion creada con éxito',
+        statusCode: HttpStatus.OK
+      }
     } catch (error) {
       throw new HttpException('Error al crear la sancion', HttpStatus.BAD_REQUEST);
     }
@@ -89,6 +93,9 @@ export class PenalizacionesService {
       const sancionesGrado: sanciones[] = await this.databaseService.sanciones.findMany({
         where: {
           grado: grado
+        },
+        include: {
+          Estudiante: true,
         }
       });
 
@@ -105,7 +112,11 @@ export class PenalizacionesService {
  
 
   public async findAll(){
-    return await this.databaseService.sanciones.findMany();
+    return await this.databaseService.sanciones.findMany({
+      include: {
+        Estudiante: true,
+      }
+    });
   }
 
   public async findOne(id_sancion: number){
@@ -114,6 +125,9 @@ export class PenalizacionesService {
       const sancion = await this.databaseService.sanciones.findUnique({
         where: {
           id_sanciones: id_sancion,
+        },
+        include: {
+          Estudiante: true,
         }
       });
       
@@ -126,23 +140,24 @@ export class PenalizacionesService {
       throw error;
     }
   }
-  @Cron('0 30 11 * * 1-5', {
+  @Cron('0 30 8 * * 1-5', {
     name: 'updatePenalizaciones',
     timeZone: 'America/Santiago'
   })
   private async actualizacionAutomaticaEstado(): Promise<void>{
     try {
-      
+      console.log('hola papus');
       const scanPenalizaciones = await this.databaseService.sanciones.findMany({
         where: {
           estado_sancion: true,
         }
       });
-
+      console.log(scanPenalizaciones);
       const fecha_actual = new Date();
      scanPenalizaciones.forEach((penalizacion) => {
         const fechaTermino = new Date(penalizacion.fecha_final);
-        if(fecha_actual < fechaTermino){
+        if(fecha_actual > fechaTermino){
+          console.log('Finalizando sancion');
           const sancion = this.finalizarSancion(penalizacion.id_sanciones);
         }
       })
@@ -163,14 +178,22 @@ export class PenalizacionesService {
       }
     });
 
+    if(sancion.grado == grados_sancion.GRAVE){
+      const activarEstudiante = await this.databaseService.estudiante.update({
+        where: {
+          rut: sancion.rut_estudiante,
+        },
+        data: {
+          estado: true,
+        }
+      })
+    }
+
     return sancion;
   }
   public async update(id: number, updatePenalizacioneDto: UpdatePenalizacioneDto) {
     try {
-
-
       const sancion = this.findOne(id);
-
       return await this.databaseService.sanciones.update({
         where: {
           id_sanciones: id,
@@ -203,6 +226,38 @@ export class PenalizacionesService {
       }
     } catch (error) {
       throw new InternalServerErrorException('Error interno al borrar la penalización')
+    }
+  }
+
+  public async obtenerPenalizacionesActivas(){
+    return await this.databaseService.sanciones.findMany({
+      where: {
+        estado_sancion: true,
+      }
+    })
+  }
+
+  public async obtenerCantidadSancionesActivasPorEstudiante(rut_estudiante: string){
+    
+    const contGraves = await this.databaseService.sanciones.count({
+      where: {
+        rut_estudiante: rut_estudiante,
+        grado: grados_sancion.GRAVE,
+        estado_sancion: true,
+      }
+    });
+
+    const contLeves = await this.databaseService.sanciones.count({
+      where: {
+        rut_estudiante: rut_estudiante,
+        grado: grados_sancion.LEVE,
+        estado_sancion: true,
+      }
+    });
+
+    return { 
+      graves: contGraves,
+      leves: contLeves,
     }
   }
 }

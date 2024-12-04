@@ -51,8 +51,28 @@ export class PrestamoRegularService {
     return await this.databaseService.regular.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} prestamoRegular`;
+  public async findOne(id_prestamo: number) {
+    try {
+      const obtenerPrestamo = await this.databaseService.regular.findUnique({
+        where: {
+          id_prestamo: id_prestamo
+        },
+        include: {
+          estudiante: true,
+        }
+      });
+
+      if(!obtenerPrestamo){
+        throw new BadRequestException('Prestamo especial no encontrado');
+      }
+
+      return obtenerPrestamo;
+    } catch (error) {
+      if(error instanceof BadRequestException){
+        throw error;
+      }
+      throw new InternalServerErrorException('Error interno al obtener un prestamo');
+    }
   }
 
   async finalizarPrestamo(finPrestamo: FinPrestamoDto) {

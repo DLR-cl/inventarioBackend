@@ -36,7 +36,7 @@ model regular {
   id_usuario  Int
   id_dici     String     @db.VarChar(30)
   recursos    recurso    @relation(fields: [id_dici], references: [id_dici], onDelete: NoAction, onUpdate: NoAction, map: "regular_ibfk_1")
-  Estudiante  estudiante @relation(fields: [rut], references: [rut], onDelete: NoAction, onUpdate: NoAction, map: "regular_ibfk_2")
+  estudiante  estudiante @relation(fields: [rut], references: [rut], onDelete: NoAction, onUpdate: NoAction, map: "regular_ibfk_2")
   user        usuario    @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "regular_ibfk_3")
 
   @@index([id_usuario], map: "id_usuario")

@@ -12,10 +12,6 @@ export class CreatePenalizacioneDto {
     comentario: string;
 
     @IsNotEmpty()
-    @IsBoolean()
-    estado_sancion: boolean;
-
-    @IsNotEmpty()
     @IsNumber()
     id_usuario: number;
 
