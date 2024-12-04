@@ -22,13 +22,13 @@ export class AuthService {
     public async validateUser(authPayload: AuthPayloadDto){
         try {
             // definir si existe usuario
-            if(!this.existeUsuario(authPayload.rut)){
+            if(!this.existeUsuario(authPayload.correo)){
                 throw new HttpException('El usuario no existe', HttpStatus.NOT_FOUND);
             }
             
-            const usuario: usuario = await this.dataBaseService.usuario.findUnique({
+            const usuario: usuario = await this.dataBaseService.usuario.findFirstOrThrow({
                 where: {
-                    rut: authPayload.rut,
+                    correo: authPayload.correo,
                 },
             });
 
@@ -55,10 +55,10 @@ export class AuthService {
 
 
     // funciones de apoyo 
-    private async existeUsuario(rut_usuario: string): Promise<boolean> {
-        const usuario  = await this.dataBaseService.usuario.findUnique({
+    private async existeUsuario(correo: string): Promise<boolean> {
+        const usuario  = await this.dataBaseService.usuario.findFirstOrThrow({
             where: {
-                rut: rut_usuario,
+                correo: correo,
             }
         });
 

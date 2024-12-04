@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { PrestamoRegularService } from './prestamo_regular.service.js';
 import { CreatePrestamoRegularDto } from './dto/create-prestamo_regular.dto.js';
 import { FinPrestamoDto } from './dto/fin-prestamo-dto.js';
@@ -13,8 +13,8 @@ export class PrestamoRegularController {
   }
 
   @Get()
-  findAll() {
-    return this.prestamoRegularService.findAll();
+  findAll(@Query('page') page: number, @Query('limit') limit: number) {
+    return this.prestamoRegularService.findAll(page, limit);
   }
 
   @Get('/activos')

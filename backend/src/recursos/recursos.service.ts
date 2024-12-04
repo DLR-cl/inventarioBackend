@@ -38,9 +38,43 @@ export class RecursosService {
     }
   }
 
-  async findAll() : Promise<recurso[]>{
-    return await this.databaseService.recurso.findMany();
+  async findAll(page: number = 1, limit: number = 10): Promise<{
+  data: recurso[];
+  totalPages: number;
+  totalRecords: number;
+  currentPage: number;
+}> {
+
+  if (page < 1 ) {
+    page = 1;
   }
+  if (limit < 1) {
+    limit = 10;
+  }
+  const skip = (page - 1) * limit;
+
+  // Total de registros
+  const totalRecords = await this.databaseService.recurso.count();
+
+  // Calcular total de páginas
+  const totalPages = Math.ceil(totalRecords / limit);
+
+  // Recuperar registros con paginación
+  const data = await this.databaseService.recurso.findMany({
+    skip,
+    take: +limit,
+    include: {
+      categoria: true,
+    },
+  });
+
+  return {
+    data,
+    totalPages,
+    totalRecords,
+    currentPage: page,
+  };
+}
 
   async findOne(id: string) : Promise<recurso>{
     return await this.databaseService.recurso.findUnique({
