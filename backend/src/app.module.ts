@@ -12,12 +12,14 @@ import { PenalizacionesModule } from './penalizaciones/penalizaciones.module.js'
 import { AuthModule } from './auth/auth.module.js';
 import { ScheduleModule } from '@nestjs/schedule';
 import { join } from 'path';
+import { StatisticsModule } from './statistics/statistics.module.js';
 
 
 @Module({
   imports: [
     RecursosModule, DatabaseModule, CategoriasModule, EstudiantesModule, UsuariosModule, PrestamoRegularModule, PrestamoEspecialModule, PenalizacionesModule, AuthModule,
-    ScheduleModule.forRoot()
+    ScheduleModule.forRoot(),
+    StatisticsModule
   ],
   controllers: [AppController],
   providers: [AppService],
