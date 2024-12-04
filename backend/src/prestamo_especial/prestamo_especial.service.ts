@@ -29,6 +29,10 @@ export class PrestamoEspecialService {
         throw new HttpException('Estudiante no encontrado', HttpStatus.BAD_REQUEST);
       }
 
+      if(!existStudent.estado){
+        throw new BadRequestException('Estudiante deshabilitado para prestamo');
+      }
+
       const prestamoEspecial = await this.databaseService.especial.create({
         data: {
           ...prestamo_especial,
