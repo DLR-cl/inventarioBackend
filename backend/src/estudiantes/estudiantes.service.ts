@@ -111,9 +111,23 @@ export class EstudiantesService {
     }
   }
 
-  async findAll() {
+  async findAll(page: number, limit: number) {
     try {
-      return this.databaseService.estudiante.findMany()
+      const skip = (page - 1) * limit;
+      const totalRecords = await this.databaseService.estudiante.count();
+      const totalPages = Math.ceil(totalRecords / limit);
+
+      const data = await this.databaseService.estudiante.findMany({
+        skip,
+        take: +limit,
+      });
+
+      return {
+        data,
+        totalPages,
+        totalRecords,
+        currentPage: page,
+      };
     } catch (error) {
       throw new HttpException('Error al encontrar estudiantes', HttpStatus.BAD_GATEWAY)
     }

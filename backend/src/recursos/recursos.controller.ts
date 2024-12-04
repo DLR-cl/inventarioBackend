@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { CreateRecursoDto } from './dto/create-recurso.dto.js';
 import { UpdateRecursoDto } from './dto/update-recurso.dto.js';
 import { Prisma } from '@prisma/client';
@@ -13,11 +13,12 @@ export class RecursosController {
   async create(@Body() createRecurso: CreateRecursoDto) : Promise<ResponseDto<CreateRecursoDto>>{
     const newRecurso = await this.recursosService.create(createRecurso)
     return newRecurso;
+
   }
 
   @Get()
-  findAll() {
-    return this.recursosService.findAll();
+  findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
+    return this.recursosService.findAll(page, limit);
   }
 
   @Get('/prestamos_especiales')

@@ -4,7 +4,7 @@ export class AuthPayloadDto{
     
     @IsString()
     @IsNotEmpty()
-    rut: string;
+    correo: string;
     
     @IsString()
     @IsNotEmpty()

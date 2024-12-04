@@ -91,9 +91,28 @@ export class UsuariosService {
 
 
   
-  async findAll() {
+  async findAll(page: number = 1, limit: number = 10) {
     try {
-      return await this.databaseService.usuario.findMany();
+      const skip = (page - 1) * limit;
+  
+    // Total de registros
+    const totalRecords = await this.databaseService.usuario.count();
+  
+    // Calcular total de páginas
+    const totalPages = Math.ceil(totalRecords / limit);
+  
+    // Recuperar registros con paginación
+    const data = await this.databaseService.usuario.findMany({
+      skip,
+      take: +limit,
+    });
+  
+    return {
+      data,
+      totalPages,
+      totalRecords,
+      currentPage: page,
+    };
     }catch(error){
       throw new HttpException('Error al cargar todos los usuarios', HttpStatus.BAD_REQUEST);
     }

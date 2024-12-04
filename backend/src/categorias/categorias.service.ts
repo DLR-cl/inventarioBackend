@@ -104,12 +104,15 @@ export class CategoriasService {
   async remove(id: number) : Promise<ResponseDto<categoria>>{
     try {
 
-      if(!this.existeCategoriaById(id)){
+      const existeCategoria = await this.existeCategoriaById(id);
+      const categoriaRecursos = await this.categoriaTieneRecursos(id);
+
+      if( !existeCategoria){
         throw new HttpException('Error, categoria no existe', HttpStatus.BAD_REQUEST);
       }
 
       // si la categoria aun tiene recursos
-      if(!this.categoriaTieneRecursos(id)){
+      if(categoriaRecursos){
         throw new HttpException('Error, la categoria aún tiene recursos registrados', HttpStatus.NOT_ACCEPTABLE);
       }
 
@@ -129,7 +132,12 @@ export class CategoriasService {
       return response;
       
     } catch(error){
-      throw new HttpException('Error al borrar categoria', HttpStatus.BAD_REQUEST);
+      console.log(error);
+      if(error instanceof HttpException){
+        throw error;
+      }else{
+        throw new HttpException('Error al borrar categoria', HttpStatus.BAD_REQUEST);
+      }
     }
   }
 
@@ -144,10 +152,10 @@ export class CategoriasService {
       }
     })
 
-    if(!categoria){
-      return false;
+    if(categoria){
+      return true;
     }
-    return true;
+    return false;
   }
 
   
@@ -159,10 +167,10 @@ export class CategoriasService {
       }
     })
 
-    if(!categoria){
-      return false;
+    if(categoria){
+      return true;
     }
-    return true;
+    return false;
   }
 
   private async categoriaTieneRecursos(id_categoria: number): Promise<boolean> {
@@ -171,11 +179,10 @@ export class CategoriasService {
         id_categoria: id_categoria,
       }
     })
-
-    if(!recursos_categoria){
-      return false;
+    if(recursos_categoria.length > 0){
+      return true;
     }
-    return true;
+    return false;
   }
 }
 

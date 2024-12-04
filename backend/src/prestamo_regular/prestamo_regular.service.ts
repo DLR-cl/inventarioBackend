@@ -47,8 +47,33 @@ export class PrestamoRegularService {
       }
   }
 
-  async findAll() {
-    return await this.databaseService.regular.findMany();
+  async findAll(page: number = 1, limit: number = 10){
+    if (page < 1 ) {
+      page = 1;
+    }
+    if (limit < 1) {
+      limit = 10;
+    }
+    const skip = (page - 1) * limit;
+  
+    // Total de registros
+    const totalRecords = await this.databaseService.regular.count();
+  
+    // Calcular total de páginas
+    const totalPages = Math.ceil(totalRecords / limit);
+  
+    // Recuperar registros con paginación
+    const data = await this.databaseService.regular.findMany({
+      skip,
+      take: +limit,
+    });
+  
+    return {
+      data,
+      totalPages,
+      totalRecords,
+      currentPage: page,
+    };
   }
 
   findOne(id: number) {
@@ -230,16 +255,42 @@ export class PrestamoRegularService {
     return null;
 
   }
-  public async obtenerPrestamosActivos(){
+  public async obtenerPrestamosActivos(page: number = 1, limit: number = 10){
       try {
-          const prestamos = await this.databaseService.regular.findMany({
+          if (page < 1 ) {
+            page = 1;
+          }
+          if (limit < 1) {
+            limit = 10;
+          }
+          const skip = (page - 1) * limit;
+        
+          // Total de registros
+          const totalRecords = await this.databaseService.regular.count(
+            {
+              where: {
+                hora_fin: null,
+              }
+            }
+          );
+        
+          // Calcular total de páginas
+          const totalPages = Math.ceil(totalRecords / limit);
+        
+          // Recuperar registros con paginación
+          const data = await this.databaseService.regular.findMany({
             where: {
               hora_fin: null,
-            }
-          }
-          );
-
-          return prestamos;
+            },
+            skip,
+            take: +limit,
+          });
+          return {
+            data,
+            totalPages,
+            totalRecords,
+            currentPage: page,
+          };;
       } catch (error) {
         throw new InternalServerErrorException('Error interno al obtener los prestamos activos');
       }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { UsuariosService } from './usuarios.service.js';
 import { CreateUsuarioDto } from './dto/create-usuario.dto.js';
 import { ChangePassword, UpdateUsuarioDto } from './dto/update-usuario.dto.js';
@@ -13,8 +13,8 @@ export class UsuariosController {
   }
 
   @Get()
-  findAll() {
-    return this.usuariosService.findAll();
+  findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
+    return this.usuariosService.findAll(page, limit);
   }
 
   
@@ -28,7 +28,7 @@ export class UsuariosController {
     return this.usuariosService.verAyudantes();
   }
   @Patch('change-password')
-  public async changePassword(dto: ChangePassword){
+  public async changePassword(@Body() dto: ChangePassword){
     return await this.usuariosService.changePassword(dto.usuario_id, dto.old_password, dto.new_password);
   }
 
