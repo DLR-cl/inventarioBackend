@@ -23,7 +23,7 @@ export class PenalizacionesService {
           }
         });
 
-        if(contLeves == 3){
+        if(contLeves == 2){
           const deactivateAlumno = await this.databaseService.estudiante.update({
             where:
             {
@@ -39,7 +39,7 @@ export class PenalizacionesService {
           
           const sancion = await this.databaseService.sanciones.create({
             data: {
-              grado: createPenalizacioneDto.grado,
+              grado: grados_sancion.GRAVE,
               comentario: 'Acumulación de faltas leves',
               estado_sancion: true,
               id_usuario: createPenalizacioneDto.id_usuario,
