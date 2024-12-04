@@ -22,11 +22,19 @@ export class EstudiantesService {
     if (!list.length) {
       return [];
     }
+
+    const expectedColumns = ['Rut', 'Nombre', 'Direccion', 'Fono', 'AÃ±o Ingreso', 'E-mail'];
+    // Valida que las columnas coincidan
+    const missingColumns = expectedColumns.filter((col) => !fields.includes(col));
+    if (missingColumns.length) {
+      throw new Error(`El archivo Excel no contiene las columnas esperadas: ${missingColumns.join(', ')}`);
+    }
     const [fields, ...values] = list;
     const dataFormat = values.map((valuesItem) => (fields as string[]).reduce(
       (acc, field, index) => Object.assign(acc, { [field]: valuesItem[index] }), {},
     ),
     );
+    
 
     const listStudents = await this.databaseService.estudiante.findMany({
       select: {

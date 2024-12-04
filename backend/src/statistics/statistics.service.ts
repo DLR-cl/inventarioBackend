@@ -71,6 +71,7 @@ export class StatisticsService {
         };
       })
     );
+
     return recursosConNombres;
   }
 }
