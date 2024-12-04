@@ -60,6 +60,15 @@ export class PrestamoEspecialService {
         data: {
           estado: false,
         }
+      });
+
+      const change_recurso = await this.databaseService.recurso.update({
+        where: {
+          id_dici: updatePrestamo.id_dici
+        },
+        data: {
+          estado_recurso: true,
+        }
       })
 
       return {
