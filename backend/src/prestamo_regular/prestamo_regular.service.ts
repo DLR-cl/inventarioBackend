@@ -120,7 +120,7 @@ export class PrestamoRegularService {
         },
         data: {
           hora_fin: finPrestamo.fecha_fin,
-          estado: false,
+          estado: true,
         }
       });
     } catch (error) {
