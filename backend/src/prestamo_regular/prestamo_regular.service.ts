@@ -120,9 +120,18 @@ export class PrestamoRegularService {
         },
         data: {
           hora_fin: finPrestamo.fecha_fin,
-          estado: true,
+          estado: false,
         }
       });
+
+      const chage_estado = await this.databaseService.recurso.update({
+        where: {
+          id_dici: change_fin.id_dici,
+        },
+        data: {
+          estado_recurso: true,
+        }
+      })
     } catch (error) {
       throw error;
     }
