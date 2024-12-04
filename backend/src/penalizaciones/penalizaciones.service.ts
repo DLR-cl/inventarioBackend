@@ -109,7 +109,7 @@ export class PenalizacionesService {
           const sancion = await this.databaseService.sanciones.create({
             data: {
               grado: createPenalizacioneDto.grado,
-              comentario: createPenalizacioneDto.comentario,
+              comentario: 'Acumulación de faltas leves',
               estado_sancion: true,
               id_usuario: createPenalizacioneDto.id_usuario,
               fecha_inicio: fecha_inicio,
