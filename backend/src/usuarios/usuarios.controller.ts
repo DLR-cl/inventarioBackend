@@ -12,9 +12,9 @@ export class UsuariosController {
     return this.usuariosService.create(createUsuarioDto);
   }
 
-  @Get('obtener-todos/:id')
-  findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 10, @Param('id') id_user: string) {
-    return this.usuariosService.findAll(page, limit, +id_user);
+  @Get()
+  findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
+    return this.usuariosService.findAll(page, limit);
   }
 
   
