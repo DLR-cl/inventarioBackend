@@ -91,7 +91,7 @@ export class UsuariosService {
 
 
   
-  async findAll(page: number = 1, limit: number = 10) {
+  async findAll(page: number = 1, limit: number = 10, id_user: number) {
     try {
       const skip = (page - 1) * limit;
   
@@ -105,6 +105,11 @@ export class UsuariosService {
     const data = await this.databaseService.usuario.findMany({
       skip,
       take: +limit,
+      where: {
+        NOT: {
+          id_usuario: id_user,
+        }
+      }
     });
   
     return {
