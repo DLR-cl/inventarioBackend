@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
 import { AuthPayloadDto } from './dto/auth.dto.js';
 import { DatabaseService } from '../database/database/database.service.js';
 import { usuario } from '@prisma/client';
@@ -23,7 +23,7 @@ export class AuthService {
         try {
             // definir si existe usuario
             if(!this.existeUsuario(authPayload.correo)){
-                throw new HttpException('El usuario no existe', HttpStatus.NOT_FOUND);
+                throw new BadRequestException('Usuario no existente');
             }
             
             const usuario: usuario = await this.dataBaseService.usuario.findFirstOrThrow({
@@ -48,8 +48,14 @@ export class AuthService {
             
             
         } catch(error){
-            Logger.error(error.message);
-            throw new HttpException('Error al validar el usuario', HttpStatus.BAD_REQUEST);
+            console.log(error);
+            if(error instanceof BadRequestException){
+                throw error;
+            }else if(error instanceof UnauthorizedException){
+                throw error;
+            }
+
+            throw new InternalServerErrorException('Error interno al validar el usuario');
         }
     }
 
