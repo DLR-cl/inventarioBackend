@@ -75,6 +75,9 @@ export class PrestamoRegularService {
     const data = await this.databaseService.regular.findMany({
       skip,
       take: +limit,
+      orderBy: {
+        id_prestamo: 'desc'
+      }
     });
   
     return {
