@@ -28,7 +28,7 @@ export class PrestamoRegularService {
         if(!estudiante.estado){
           throw new BadRequestException('Estudiante deshabilitado para prestamo');
         }
-        
+
         const create_regular = await this.databaseService.regular.create({
           data : {
             ...createPrestamoRegular,
@@ -340,7 +340,10 @@ export class PrestamoRegularService {
         where: {
           NOT: {
             hora_fin: null
-          }
+          },
+        },
+        orderBy : {
+          hora_inicio: 'desc',
         }
       });
 
