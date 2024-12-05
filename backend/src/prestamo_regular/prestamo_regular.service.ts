@@ -343,7 +343,7 @@ export class PrestamoRegularService {
           },
         },
         orderBy : {
-          hora_inicio: 'asc',
+          id_prestamo: 'desc',
         }
       });
 
