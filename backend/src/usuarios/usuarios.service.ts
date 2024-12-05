@@ -17,11 +17,14 @@ export class UsuariosService {
   async create(createUsuario: CreateUsuarioDto) : Promise<ResponseUsuariosDto>{
     try {
       
-      if(!this.userExists(createUsuario.rut)){
-        throw new HttpException('Usuario ya existente', HttpStatus.BAD_REQUEST);
+      if(await this.userExists(createUsuario.rut)){
+        throw new BadRequestException('Usuario ya existente');
       }
 
-      const hashedPassword = await encrypt(createUsuario.rut);
+      const firstDigits = createUsuario.rut.replaceAll('.', '').split('-')[0];
+
+      console.log(firstDigits)
+      const hashedPassword = await encrypt(firstDigits);
       const user = await this.databaseService.usuario.create({data: 
         {...createUsuario,
           password: hashedPassword,
@@ -38,7 +41,12 @@ export class UsuariosService {
       return response;
 
     } catch(error){
-      throw new HttpException('Error al crear usuario', HttpStatus.BAD_REQUEST);
+      console.log(error);
+      if(error instanceof BadRequestException){
+        throw error;
+      }else{
+        throw new InternalServerErrorException('Error interno al crear usuario');
+      }
     }
   }
 
