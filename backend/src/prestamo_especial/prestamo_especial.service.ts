@@ -14,16 +14,13 @@ export class PrestamoEspecialService {
   async create(prestamo_especial: CreatePrestamoEspecialDto) {
     try {
 
-      const existRecursoOcupado = await this.changeStateResource(prestamo_especial.id_dici)
-      if(! existRecursoOcupado){
-        throw new HttpException('El recurso ya se encuentra ocupado', HttpStatus.BAD_REQUEST);
-      }
 
       const existStudent = await this.databaseService.estudiante.findUnique({
         where: {
           rut: prestamo_especial.rut_estudiante,
         }
       }) 
+      
 
       if(!existStudent){
         throw new HttpException('Estudiante no encontrado', HttpStatus.BAD_REQUEST);
@@ -32,6 +29,12 @@ export class PrestamoEspecialService {
       if(!existStudent.estado){
         throw new BadRequestException('Estudiante deshabilitado para prestamo');
       }
+
+      const existRecursoOcupado = await this.changeStateResource(prestamo_especial.id_dici)
+      if(! existRecursoOcupado){
+        throw new HttpException('El recurso ya se encuentra ocupado', HttpStatus.BAD_REQUEST);
+      }
+
 
       const prestamoEspecial = await this.databaseService.especial.create({
         data: {
