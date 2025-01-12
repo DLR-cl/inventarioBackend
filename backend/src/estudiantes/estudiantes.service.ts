@@ -13,16 +13,15 @@ import e from 'express';
 export class EstudiantesService {
 
   constructor(private readonly databaseService: DatabaseService) { }
-
   async format(data: Worksheet) {
     const list: string[][] = [];
     data.eachRow((row: Row) => {
       list.push([...(row.values as CellValue[])].splice(1) as string[]);
     });
+
     if (!list.length) {
       return [];
     }
-
 
     const [fields, ...values] = list;
 
@@ -32,77 +31,73 @@ export class EstudiantesService {
     if (missingColumns.length) {
       throw new Error(`El archivo Excel no contiene las columnas esperadas: ${missingColumns.join(', ')}`);
     }
-    
-    const dataFormat = values.map((valuesItem) => (fields as string[]).reduce(
-      (acc, field, index) => Object.assign(acc, { [field]: valuesItem[index] }), {},
-    ),
+
+    const dataFormat = values.map((valuesItem) =>
+      fields.reduce((acc, field, index) => Object.assign(acc, { [field]: valuesItem[index] }), {}),
     );
 
-    
-
-    const listStudents = await this.databaseService.estudiante.findMany({
+    // Obtén todos los estudiantes activos
+    const estudiantesActivos = await this.databaseService.estudiante.findMany({
       select: {
         rut: true,
       },
       where: {
         estado: true,
-      }
-    })
-    const rutList = listStudents.map(student => student.rut);
+      },
+    });
 
+    // Convierte la lista de estudiantes activos a un Set para búsquedas rápidas
+    const rutsActivosSet = new Set(estudiantesActivos.map((student) => student.rut));
 
-    for (let object of dataFormat) {
-      let estudiante: CreateEstudianteDto = {
-        rut: object['Rut'] + '',
-        nombre: object['Nombre'] + '',
-        direccion: object['Direccion'] + '',
-        fono: object['Fono'] + '',
-        ingreso: object['AÃ±o Ingreso'],
-        correo: object['E-mail']
-      }
-      console.log(object['Rut'] in rutList);
-      console.log(object['Rut'])
-      if (!(object['Rut'] in rutList)) {
-        let findStudent = await this.databaseService.estudiante.findUnique({
-          where: {
-            rut: object['Rut']+'',
-          }
+    // Nuevos estudiantes a insertar
+    const nuevosEstudiantes: CreateEstudianteDto[] = [];
+    const rutsNuevosEnNomina = new Set<string>();
+
+    for (const object of dataFormat) {
+      const rut = object['Rut'] + '';
+      rutsNuevosEnNomina.add(rut); // Agrega a la lista de RUTs nuevos
+
+      if (!rutsActivosSet.has(rut)) {
+        // Si el estudiante no está en los activos
+        const findStudent = await this.databaseService.estudiante.findUnique({
+          where: { rut },
         });
-        if(!findStudent){
-          let newStudent = await this.databaseService.estudiante.create({
-            data: estudiante
+
+        if (!findStudent) {
+          // Agrega a la lista para insertar
+          nuevosEstudiantes.push({
+            rut,
+            nombre: object['Nombre'] + '',
+            direccion: object['Direccion'] + '',
+            fono: object['Fono'] + '',
+            ingreso: object['AÃ±o Ingreso'],
+            correo: object['E-mail'],
           });
         }
       }
     }
 
-    await this.actualizarEstudiantesNomina(rutList, dataFormat);    
-    console.log(dataFormat[0]['Rut']);
-    return dataFormat
-  }
-
-  private async actualizarEstudiantesNomina(listRut: string[], dataFormat: {}[]){
-    for (let rut_student of listRut) {
-      let cont = 0;
-      for (let student of dataFormat) {
-        if (rut_student == student['Rut']) {
-          cont++;
-        }
-      }
-
-      if (cont == 0) {
-        const deshabilitar = await this.databaseService.estudiante.update({
-          where: {
-            rut: rut_student,
-          },
-          data: {
-            estado: false,
-          }
-        })
-      }
+    // Inserta nuevos estudiantes en un solo batch
+    if (nuevosEstudiantes.length > 0) {
+      await this.databaseService.estudiante.createMany({
+        data: nuevosEstudiantes,
+        skipDuplicates: true, // Evita duplicados en la inserción
+      });
     }
 
+    // Deshabilitar estudiantes que no están en la nómina nueva
+    const rutsADeshabilitar = Array.from(rutsActivosSet).filter((rut) => !rutsNuevosEnNomina.has(rut));
+
+    if (rutsADeshabilitar.length > 0) {
+      await this.databaseService.estudiante.updateMany({
+        where: { rut: { in: rutsADeshabilitar } },
+        data: { estado: false },
+      });
+    }
+
+    return dataFormat;
   }
+
   async create(createEstudiante: CreateEstudianteDto): Promise<ResponseDto<CreateEstudianteDto>> {
     try {
       console.log('hola');
@@ -166,7 +161,7 @@ export class EstudiantesService {
     })
   }
 
-  public async obtenerCantidadEstudiantesActivos(){
+  public async obtenerCantidadEstudiantesActivos() {
     return await this.databaseService.estudiante.findMany({
       where: {
         estado: true,
@@ -177,14 +172,14 @@ export class EstudiantesService {
     return `This action removes a #${id} estudiante`;
   }
 
-  public async actualizarEstudiante(rut: string, estudiante: UpdateEstudianteDto){
+  public async actualizarEstudiante(rut: string, estudiante: UpdateEstudianteDto) {
     try {
       const student = await this.databaseService.estudiante.findUnique({
         where: {
           rut: rut,
         }
       });
-      if(!student){
+      if (!student) {
         throw new BadRequestException('Estudiante a actualizar no existe');
       }
 
@@ -201,9 +196,9 @@ export class EstudiantesService {
         object: updateStudent
       }
     } catch (error) {
-      if(error instanceof BadRequestException){
+      if (error instanceof BadRequestException) {
         throw error;
-      }  
+      }
 
       throw new InternalServerErrorException('Error interno al actualizar un estudiante');
     }
