@@ -1,19 +1,48 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { PrestamoEspecialService } from './prestamo_especial.service.js';
 import { CreatePrestamoEspecialDto } from './dto/create-prestamo_especial.dto.js';
 import { UpdatePrestamoEspecialDto } from './dto/update-prestamo_especial.dto.js';
+import { FinPrestamoEspecialDto } from './dto/finalizar-prestamo.dto.js';
 
 @Controller('prestamo-especial')
 export class PrestamoEspecialController {
-  constructor(private readonly prestamoEspecialService: PrestamoEspecialService) {}
+  constructor(
+    private readonly prestamoEspecialService: PrestamoEspecialService,
+  ) {}
 
   @Post()
   create(@Body() createPrestamoEspecialDto: CreatePrestamoEspecialDto) {
     return this.prestamoEspecialService.create(createPrestamoEspecialDto);
   }
 
+  @Post('/finalizar-prestamo')
+  finalizarPrestamo(@Body() finalizarPrestamoDto: FinPrestamoEspecialDto) {
+    return this.prestamoEspecialService.finalizarPrestamoEspecial(
+      finalizarPrestamoDto,
+    );
+  }
+
+  @Get('/activos')
+  getActivos() {
+    return this.prestamoEspecialService.obtenerPrestamosEspecialesActivos();
+  }
+
+  @Get('/historial')
+  getHistorial() {
+    return this.prestamoEspecialService.obtenerHistorial();
+  }
+
   @Get()
-  findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
+  findAll(@Query('page') page?, @Query('limit') limit?) {
     return this.prestamoEspecialService.findAll(page, limit);
   }
 
@@ -23,7 +52,10 @@ export class PrestamoEspecialController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePrestamoEspecialDto: UpdatePrestamoEspecialDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updatePrestamoEspecialDto: UpdatePrestamoEspecialDto,
+  ) {
     return this.prestamoEspecialService.update(+id, updatePrestamoEspecialDto);
   }
 

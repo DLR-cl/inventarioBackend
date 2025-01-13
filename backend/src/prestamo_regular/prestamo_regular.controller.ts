@@ -18,8 +18,8 @@ export class PrestamoRegularController {
   }
 
   @Get('/activos')
-  getActivos(){
-    return this.prestamoRegularService.obtenerPrestamosActivos();
+  getActivos(@Query('page') page?: number, @Query('limit') limit?: number){
+    return this.prestamoRegularService.obtenerPrestamosActivos(page, limit);
   };
 
   

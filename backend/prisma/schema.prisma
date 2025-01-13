@@ -81,7 +81,7 @@ model estudiante {
 }
 
 model recurso {
-  nombre         String     @db.VarChar(200)
+  color         String     @db.VarChar(200)
   marca          String     @db.VarChar(50)
   descripcion    String?    @db.VarChar(3000)
   fecha_ingreso  DateTime   @db.DateTime

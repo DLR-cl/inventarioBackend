@@ -1,11 +1,18 @@
-import { IsString, IsOptional, IsInt, IsDateString, IsNotEmpty, IsDate, IsNumber } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsInt,
+  IsDateString,
+  IsNotEmpty,
+  IsDate,
+  IsNumber,
+} from 'class-validator';
 
 export class CreateRecursoDto {
-
   @IsNotEmpty()
   @IsString()
-  nombre: string;
-  
+  color: string;
+
   @IsNotEmpty()
   @IsString()
   marca: string;
@@ -21,7 +28,6 @@ export class CreateRecursoDto {
   @IsNotEmpty()
   @IsString()
   fecha_ingreso: string;
-  
 
   @IsNotEmpty()
   @IsNumber()
@@ -38,5 +44,4 @@ export class CreateRecursoDto {
   @IsOptional()
   @IsString()
   ubicacion?: string;
-
 }

@@ -66,7 +66,7 @@ export class StatisticsService {
           select: { nombre_categoria: true },
         });
         return {
-          categoria: categoria?.nombre_categoria || 'Sin Categoría',
+          categoria: categoria.nombre_categoria ?? 'Sin Categoría',
           cantidad: item._count,
         };
       })

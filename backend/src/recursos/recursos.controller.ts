@@ -17,7 +17,7 @@ export class RecursosController {
   }
 
   @Get()
-  findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
+  async findAll(@Query('page') page?: number, @Query('limit') limit?: number) {
     return this.recursosService.findAll(page, limit);
   }
 

@@ -6,136 +6,151 @@ import { Prisma, recurso } from '@prisma/client';
 import { ResponseDto } from './dto/response.dto.js';
 @Injectable()
 export class RecursosService {
-  constructor(private readonly databaseService : DatabaseService){}
-  
-  
-  async create(createRecurso: CreateRecursoDto) : Promise<any>{
+  constructor(private readonly databaseService: DatabaseService) {}
+
+  async create(createRecurso: CreateRecursoDto): Promise<any> {
     try {
-        const newRecurso = await this.databaseService.recurso.create(
-          {data : {
-            nombre: createRecurso.nombre,
-            marca: createRecurso.marca,
-            descripcion: createRecurso.descripcion,
-            modelo: createRecurso.modelo,
-            fecha_ingreso: new Date(createRecurso.fecha_ingreso),
-            id_categoria: createRecurso.id_categoria,
-            id_dici: createRecurso.id_dici,
-            id_uta: createRecurso.id_uta,
-            ubicacion: createRecurso.ubicacion,
-          }});
-          
-        const response : ResponseDto<recurso> = {
-          statusCode : HttpStatus.CREATED,
-          message: 'Recurso creado con exito',
-          data: newRecurso,
-        }
+      const newRecurso = await this.databaseService.recurso.create({
+        data: {
+          color: createRecurso.color,
+          marca: createRecurso.marca,
+          descripcion: createRecurso.descripcion,
+          modelo: createRecurso.modelo,
+          fecha_ingreso: new Date(createRecurso.fecha_ingreso),
+          id_categoria: createRecurso.id_categoria,
+          id_dici: createRecurso.id_dici,
+          id_uta: createRecurso.id_uta,
+          ubicacion: createRecurso.ubicacion,
+        },
+      });
 
-        return response
+      const response: ResponseDto<recurso> = {
+        statusCode: HttpStatus.CREATED,
+        message: 'Recurso creado con exito',
+        data: newRecurso,
+      };
 
-
-    } catch (error){
-      throw new HttpException('Error al crear el recurso',  HttpStatus.BAD_REQUEST);
+      return response;
+    } catch (error) {
+      throw new HttpException('Error al crear el recurso', HttpStatus.BAD_REQUEST);
     }
   }
 
-  async findAll(page: number = 1, limit: number = 10): Promise<{
-  data: recurso[];
-  totalPages: number;
-  totalRecords: number;
-  currentPage: number;
-}> {
+  async findAll(
+    page: number = 1, // Valor predeterminado 1 si no se proporciona
+    limit: number = 0, // Valor predeterminado 0 si no se proporciona (esto indica que no hay límite)
+  ): Promise<{
+    data: recurso[];
+    totalPages?: number;
+    totalRecords: number;
+    currentPage?: number;
+  }> {
+    // Si no se especifica un límite, obtenemos todos los registros sin paginación
+    if (limit === 0) {
+      // Recuperar todos los registros sin paginación
+      const data = await this.databaseService.recurso.findMany({
+        include: {
+          categoria: true,
+        },
+      });
 
-  if (page < 1 ) {
-    page = 1;
-  }
-  if (limit < 1) {
-    limit = 10;
-  }
-  const skip = (page - 1) * limit;
+      // Contamos los registros para el total
+      const totalRecords = data.length;
 
-  // Total de registros
-  const totalRecords = await this.databaseService.recurso.count();
-
-  // Calcular total de páginas
-  const totalPages = Math.ceil(totalRecords / limit);
-
-  // Recuperar registros con paginación
-  const data = await this.databaseService.recurso.findMany({
-    skip,
-    take: +limit,
-    include: {
-      categoria: true,
-    },
-  });
-
-  return {
-    data,
-    totalPages,
-    totalRecords,
-    currentPage: page,
-  };
-}
-
-  async findOne(id: string) : Promise<recurso>{
-    return await this.databaseService.recurso.findUnique({
-      where : {
-        id_dici: id
-      }
-    })
-  }
-
-  async update(id: string, updateRecurso: UpdateRecursoDto) : Promise<ResponseDto<recurso>>{
-      try {
-        const actRecurso = await this.databaseService.recurso.update({
-          where : {id_dici : id},
-          data : updateRecurso      
-        }) 
-
-        const response : ResponseDto<recurso> = {
-          statusCode : HttpStatus.ACCEPTED,
-          message : 'Recurso actualizado',
-          data : actRecurso,
-        }
-        return response;
-
-      } catch (error){
-        throw new HttpException('Error al actualizar recurso', HttpStatus.BAD_REQUEST)
-      }
-  }
-    
-
-  async remove(id: string) : Promise<ResponseDto<recurso>>{
-   try {
-
-    if(!await this.databaseService.recurso.findUnique({
-      where : { id_dici : id,}
-    })) {
-      throw new HttpException('Recurso a eliminar no existe', HttpStatus.BAD_REQUEST);
+      return {
+        data,
+        totalRecords,
+      };
     }
 
-    const deleteRecurso = await this.databaseService.recurso.delete({
-      where : {id_dici : id},
+    // Si hay un límite, se aplica la paginación
+    if (page < 1) {
+      page = 1; // Asegura que la página no sea menor que 1
+    }
+
+    const skip = (page - 1) * limit;
+
+    // Total de registros
+    const totalRecords = await this.databaseService.recurso.count();
+
+    // Calcular total de páginas
+    const totalPages = Math.ceil(totalRecords / limit);
+
+    // Recuperar registros con paginación
+    const data = await this.databaseService.recurso.findMany({
+      skip,
+      take: limit,
+      include: {
+        categoria: true,
+      },
     });
-  
-    const response : ResponseDto<recurso> = {
-      statusCode : HttpStatus.OK,
-      message : 'Recurso borrado con exito',
-      data: deleteRecurso
-    }
-    return response
-  } catch(error) {
-    throw new HttpException('Error, no se pudo borrar el recurso', HttpStatus.BAD_REQUEST)
+
+    return {
+      data,
+      totalPages,
+      totalRecords,
+      currentPage: page,
+    };
   }
-}
+
+  async findOne(id: string): Promise<recurso> {
+    return await this.databaseService.recurso.findUnique({
+      where: {
+        id_dici: id,
+      },
+    });
+  }
+
+  async update(id: string, updateRecurso: UpdateRecursoDto): Promise<ResponseDto<recurso>> {
+    try {
+      const actRecurso = await this.databaseService.recurso.update({
+        where: { id_dici: id },
+        data: updateRecurso,
+      });
+
+      const response: ResponseDto<recurso> = {
+        statusCode: HttpStatus.ACCEPTED,
+        message: 'Recurso actualizado',
+        data: actRecurso,
+      };
+      return response;
+    } catch (error) {
+      throw new HttpException('Error al actualizar recurso', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async remove(id: string): Promise<ResponseDto<recurso>> {
+    try {
+      if (
+        !(await this.databaseService.recurso.findUnique({
+          where: { id_dici: id },
+        }))
+      ) {
+        throw new HttpException('Recurso a eliminar no existe', HttpStatus.BAD_REQUEST);
+      }
+
+      const deleteRecurso = await this.databaseService.recurso.delete({
+        where: { id_dici: id },
+      });
+
+      const response: ResponseDto<recurso> = {
+        statusCode: HttpStatus.OK,
+        message: 'Recurso borrado con exito',
+        data: deleteRecurso,
+      };
+      return response;
+    } catch (error) {
+      throw new HttpException('Error, no se pudo borrar el recurso', HttpStatus.BAD_REQUEST);
+    }
+  }
 
   // devuelve todos los prestamos en los que aparece el recurso
-  async getPrestamosRegularFromResource(id_dici: string){
+  async getPrestamosRegularFromResource(id_dici: string) {
     try {
       const prestamo_regular = await this.databaseService.regular.findMany({
-        where:
-        {
-          id_dici: id_dici
-        }
+        where: {
+          id_dici: id_dici,
+        },
       });
 
       return prestamo_regular;
@@ -144,12 +159,12 @@ export class RecursosService {
     }
   }
 
-  async getPrestamosEspecialFromResource(id_dici: string){
+  async getPrestamosEspecialFromResource(id_dici: string) {
     try {
       const prestamos_especial = await this.databaseService.especial.findMany({
         where: {
-          id_dici: id_dici
-        }
+          id_dici: id_dici,
+        },
       });
 
       return prestamos_especial;
@@ -158,20 +173,18 @@ export class RecursosService {
     }
   }
 
-  async getAllRecursosFromCategoriasActivos(id : number){
+  async getAllRecursosFromCategoriasActivos(id: number) {
     try {
       const recursos = await this.databaseService.recurso.findMany({
         where: {
           id_categoria: id,
           estado_recurso: true,
-        }
+        },
       });
 
-      return recursos
-    } catch (error){
+      return recursos;
+    } catch (error) {
       throw new HttpException('Error al obtener todos los recursos activos de categoria', HttpStatus.BAD_REQUEST);
     }
   }
-
-
 }

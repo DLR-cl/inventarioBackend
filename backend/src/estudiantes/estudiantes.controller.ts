@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, BadRequestException, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
+  Query,
+} from '@nestjs/common';
 import { EstudiantesService } from './estudiantes.service.js';
 import { CreateEstudianteDto } from './dto/create-estudiante.dto.js';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -7,7 +19,7 @@ import { CvsOrXlsxMulterEngine } from '../shared/multer/multerStorageEngine.js';
 import { Worksheet } from 'exceljs';
 import { UpdateEstudianteDto } from './dto/update-estudiante.dto.js';
 
-const MAX_FILE_SIZE_IN_MiB = 1024*1024*20;
+const MAX_FILE_SIZE_IN_MiB = 1024 * 1024 * 20;
 @Controller('estudiantes')
 export class EstudiantesController {
   constructor(private readonly estudiantesService: EstudiantesService) {}
@@ -17,7 +29,6 @@ export class EstudiantesController {
     return this.estudiantesService.create(createEstudianteDto);
   }
 
-  
   @Post('carga_masiva')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -27,9 +38,11 @@ export class EstudiantesController {
       }),
     }),
   )
-  public async masiveCreateEstudiantes(@UploadedFile() data: {worksheet: Worksheet}){
-      const dataFormat = this.estudiantesService.format(data.worksheet);
-      return dataFormat;
+  public async masiveCreateEstudiantes(
+    @UploadedFile() data: { worksheet: Worksheet },
+  ) {
+    const dataFormat = this.estudiantesService.format(data.worksheet);
+    return dataFormat;
   }
 
   @Get()
@@ -42,22 +55,21 @@ export class EstudiantesController {
     return this.estudiantesService.findOne(id);
   }
 
-
-
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.estudiantesService.remove(+id);
   }
 
   @Get('activos')
-  public async obtenerEstudiantesActivos(){
+  public async obtenerEstudiantesActivos() {
     return await this.estudiantesService.obtenerCantidadEstudiantesActivos();
   }
 
-  
   @Patch(':rut')
-  public async actualizarEstudiante(@Param('rut') rut: string, @Body() estudiante: UpdateEstudianteDto){
+  public async actualizarEstudiante(
+    @Param('rut') rut: string,
+    @Body() estudiante: UpdateEstudianteDto,
+  ) {
     return await this.estudiantesService.actualizarEstudiante(rut, estudiante);
   }
-
 }
