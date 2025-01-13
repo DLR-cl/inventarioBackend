@@ -1,4 +1,9 @@
-import { HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { CreateRecursoDto } from './dto/create-recurso.dto.js';
 import { UpdateRecursoDto } from './dto/update-recurso.dto.js';
 import { DatabaseService } from '../database/database/database.service.js';
@@ -32,64 +37,62 @@ export class RecursosService {
 
       return response;
     } catch (error) {
-      throw new HttpException('Error al crear el recurso', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Error al crear el recurso',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
   async findAll(
-    page: number = 1, // Valor predeterminado 1 si no se proporciona
-    limit: number = 0, // Valor predeterminado 0 si no se proporciona (esto indica que no hay límite)
+    page: number = 1, // Valor predeterminado: primera página
+    limit: number = 0, // Valor predeterminado: sin límite
   ): Promise<{
     data: recurso[];
-    totalPages?: number;
-    totalRecords: number;
-    currentPage?: number;
+    totalPages?: number; // Opcional si no se utiliza paginación
+    totalRecords: number; // Siempre presente
+    currentPage?: number; // Opcional si no se utiliza paginación
   }> {
     // Si no se especifica un límite, obtenemos todos los registros sin paginación
     if (limit === 0) {
-      // Recuperar todos los registros sin paginación
+      // Recuperar todos los registros
       const data = await this.databaseService.recurso.findMany({
         include: {
-          categoria: true,
+          categoria: true, // Relación incluida
         },
       });
 
-      // Contamos los registros para el total
       const totalRecords = data.length;
 
       return {
         data,
-        totalRecords,
+        totalRecords, 
       };
     }
 
-    // Si hay un límite, se aplica la paginación
     if (page < 1) {
-      page = 1; // Asegura que la página no sea menor que 1
+      page = 1;
     }
 
     const skip = (page - 1) * limit;
 
-    // Total de registros
     const totalRecords = await this.databaseService.recurso.count();
 
-    // Calcular total de páginas
     const totalPages = Math.ceil(totalRecords / limit);
 
-    // Recuperar registros con paginación
     const data = await this.databaseService.recurso.findMany({
       skip,
       take: limit,
       include: {
-        categoria: true,
+        categoria: true, 
       },
     });
 
     return {
       data,
-      totalPages,
-      totalRecords,
-      currentPage: page,
+      totalPages, 
+      totalRecords, 
+      currentPage: page, 
     };
   }
 
@@ -101,7 +104,10 @@ export class RecursosService {
     });
   }
 
-  async update(id: string, updateRecurso: UpdateRecursoDto): Promise<ResponseDto<recurso>> {
+  async update(
+    id: string,
+    updateRecurso: UpdateRecursoDto,
+  ): Promise<ResponseDto<recurso>> {
     try {
       const actRecurso = await this.databaseService.recurso.update({
         where: { id_dici: id },
@@ -115,7 +121,10 @@ export class RecursosService {
       };
       return response;
     } catch (error) {
-      throw new HttpException('Error al actualizar recurso', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Error al actualizar recurso',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -126,7 +135,10 @@ export class RecursosService {
           where: { id_dici: id },
         }))
       ) {
-        throw new HttpException('Recurso a eliminar no existe', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          'Recurso a eliminar no existe',
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       const deleteRecurso = await this.databaseService.recurso.delete({
@@ -140,7 +152,10 @@ export class RecursosService {
       };
       return response;
     } catch (error) {
-      throw new HttpException('Error, no se pudo borrar el recurso', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Error, no se pudo borrar el recurso',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -155,7 +170,10 @@ export class RecursosService {
 
       return prestamo_regular;
     } catch (error) {
-      throw new HttpException('error al obtener todos los prestamos regulares del recurso', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'error al obtener todos los prestamos regulares del recurso',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -184,7 +202,10 @@ export class RecursosService {
 
       return recursos;
     } catch (error) {
-      throw new HttpException('Error al obtener todos los recursos activos de categoria', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Error al obtener todos los recursos activos de categoria',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }

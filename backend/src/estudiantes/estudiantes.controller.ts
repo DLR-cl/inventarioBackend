@@ -46,10 +46,11 @@ export class EstudiantesController {
   }
 
   @Get()
-  findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
+  async findAll(@Query('page') page?: number, @Query('limit') limit?: number) {
     return this.estudiantesService.findAll(page, limit);
   }
 
+  
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.estudiantesService.findOne(id);

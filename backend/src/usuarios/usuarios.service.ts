@@ -1,4 +1,11 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateUsuarioDto } from './dto/create-usuario.dto.js';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto.js';
 import { DatabaseService } from '../database/database/database.service.js';
@@ -11,62 +18,62 @@ import { compare, encrypt } from '../auth/lib/bcrypt.js';
 
 @Injectable()
 export class UsuariosService {
+  constructor(private readonly databaseService: DatabaseService) {}
 
-  constructor(private readonly databaseService : DatabaseService){}
-
-  async create(createUsuario: CreateUsuarioDto) : Promise<ResponseUsuariosDto>{
+  async create(createUsuario: CreateUsuarioDto): Promise<ResponseUsuariosDto> {
     try {
-      
-      if(await this.userExists(createUsuario.rut)){
+      if (await this.userExists(createUsuario.rut)) {
         throw new BadRequestException('Usuario ya existente');
       }
 
       const firstDigits = createUsuario.rut.replaceAll('.', '').split('-')[0];
 
-      console.log(firstDigits)
+      console.log(firstDigits);
       const hashedPassword = await encrypt(firstDigits);
-      const user = await this.databaseService.usuario.create({data: 
-        {...createUsuario,
-          password: hashedPassword,
-        }});
+      const user = await this.databaseService.usuario.create({
+        data: { ...createUsuario, password: hashedPassword },
+      });
 
-      const { password:_, ...userWithoutPassword } = user;
+      const { password: _, ...userWithoutPassword } = user;
 
       const response: ResponseUsuariosDto = {
         message: 'Usuario creado con exito',
         statusCode: HttpStatus.OK,
-        data: userWithoutPassword
-      }
+        data: userWithoutPassword,
+      };
 
       return response;
-
-    } catch(error){
+    } catch (error) {
       console.log(error);
-      if(error instanceof BadRequestException){
+      if (error instanceof BadRequestException) {
         throw error;
-      }else{
-        throw new InternalServerErrorException('Error interno al crear usuario');
+      } else {
+        throw new InternalServerErrorException(
+          'Error interno al crear usuario',
+        );
       }
     }
   }
 
-  public async changePassword(id_user: number, old_password: string, new_password: string){
+  public async changePassword(
+    id_user: number,
+    old_password: string,
+    new_password: string,
+  ) {
     try {
-
       const verify_user = await this.databaseService.usuario.findUnique({
         where: {
-          id_usuario: id_user
-        }
+          id_usuario: id_user,
+        },
       });
 
-      if(!verify_user){
+      if (!verify_user) {
         throw new BadRequestException('No existe usuario');
       }
 
-
       const isAuthorized = await compare(old_password, verify_user.password);
 
-      if(!isAuthorized){
+      if (!isAuthorized) {
         throw new UnauthorizedException('Contraseña incorrecta');
       }
 
@@ -77,141 +84,174 @@ export class UsuariosService {
         },
         data: {
           password: hashedPassword,
-        }
+        },
       });
 
       const response: ResponseUsuariosDto = {
         message: 'Usuario contraseña actualizada',
         statusCode: HttpStatus.OK,
-        data: { ...changePasswordUser }
-      }
+        data: { ...changePasswordUser },
+      };
 
       return response;
     } catch (error) {
-      if(error instanceof UnauthorizedException){
+      if (error instanceof UnauthorizedException) {
         throw error;
-      }else if(error instanceof BadRequestException){
+      } else if (error instanceof BadRequestException) {
         throw error;
       }
-      throw new InternalServerErrorException('Error interno al cambiar la contraseña')
+      throw new InternalServerErrorException(
+        'Error interno al cambiar la contraseña',
+      );
     }
   }
 
-
-  
-  async findAll(page: number = 1, limit: number = 10) {
+  async findAll(
+    page?: number, // Parámetro opcional
+    limit?: number, // Parámetro opcional
+  ): Promise<{
+    data: usuario[];
+    totalPages?: number; // Opcional si no se utiliza paginación
+    totalRecords: number; // Siempre presente
+    currentPage?: number; // Opcional si no se utiliza paginación
+  }> {
     try {
+      // Si no se envían `page` y `limit`, devolver todos los registros
+      if (!page && !limit) {
+        const data = await this.databaseService.usuario.findMany();
+        const totalRecords = data.length;
+
+        return {
+          data,
+          totalRecords,
+        };
+      }
+
+      // Validar que `page` y `limit` tengan valores predeterminados si no se envían
+      page = page && page > 0 ? page : 1;
+      limit = limit && limit > 0 ? limit : 10;
+
       const skip = (page - 1) * limit;
-  
-    // Total de registros
-    const totalRecords = await this.databaseService.usuario.count();
-  
-    // Calcular total de páginas
-    const totalPages = Math.ceil(totalRecords / limit);
-  
-    // Recuperar registros con paginación
-    const data = await this.databaseService.usuario.findMany({
-      skip,
-      take: +limit,
-    });
-  
-    return {
-      data,
-      totalPages,
-      totalRecords,
-      currentPage: page,
-    };
-    }catch(error){
-      throw new HttpException('Error al cargar todos los usuarios', HttpStatus.BAD_REQUEST);
+
+      // Total de registros
+      const totalRecords = await this.databaseService.usuario.count();
+
+      // Calcular total de páginas
+      const totalPages = Math.ceil(totalRecords / limit);
+
+      // Recuperar registros con paginación
+      const data = await this.databaseService.usuario.findMany({
+        skip,
+        take: limit,
+      });
+
+      return {
+        data,
+        totalPages,
+        totalRecords,
+        currentPage: page,
+      };
+    } catch (error) {
+      throw new HttpException(
+        'Error al cargar los usuarios',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
   async findOne(id_user: number) {
-    try{
-        return await this.databaseService.usuario.findUnique({
-          where : {
-            id_usuario : id_user,
-          }
-        })
-      }
-      catch(error){
-        throw new HttpException('Error al obtener el usuario', HttpStatus.BAD_REQUEST)
-      }
-    }
-  
-
-  async update(id_user: number, updateUsuario: UpdateUsuarioDto) : Promise<ResponseUsuariosDto> {
     try {
-      const actUsuario = await this.databaseService.usuario.update(
-        {
-          where: {id_usuario : id_user},
-          data: updateUsuario
-        }
-      )
+      return await this.databaseService.usuario.findUnique({
+        where: {
+          id_usuario: id_user,
+        },
+      });
+    } catch (error) {
+      throw new HttpException(
+        'Error al obtener el usuario',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 
-      const { password:_, ...userWithoutPassword } = actUsuario;
-      const response : ResponseUsuariosDto = {
-        statusCode : HttpStatus.OK,
-        message : 'Usuario actualizado',
-        data : userWithoutPassword,
-      }
+  async update(
+    id_user: number,
+    updateUsuario: UpdateUsuarioDto,
+  ): Promise<ResponseUsuariosDto> {
+    try {
+      const actUsuario = await this.databaseService.usuario.update({
+        where: { id_usuario: id_user },
+        data: updateUsuario,
+      });
 
-      return response
-    }catch(error){
-      throw new HttpException('Error al actualizar el usuario', HttpStatus.BAD_REQUEST)
+      const { password: _, ...userWithoutPassword } = actUsuario;
+      const response: ResponseUsuariosDto = {
+        statusCode: HttpStatus.OK,
+        message: 'Usuario actualizado',
+        data: userWithoutPassword,
+      };
+
+      return response;
+    } catch (error) {
+      throw new HttpException(
+        'Error al actualizar el usuario',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
   async remove(rut: string) {
     try {
-
-      if(!this.userExists(rut)){
+      if (!this.userExists(rut)) {
         throw new HttpException('Usuario no existe', HttpStatus.BAD_REQUEST);
       }
-    
+
       // remover usuario
       const removeUser = await this.databaseService.usuario.delete({
-        where : {rut : rut}
-      })
+        where: { rut: rut },
+      });
 
       const response = {
-        statusCode : HttpStatus.OK,
-        message : 'Usuario eliminado con exito',
-        data : removeUser
-      }
+        statusCode: HttpStatus.OK,
+        message: 'Usuario eliminado con exito',
+        data: removeUser,
+      };
 
       return response;
-    } catch(error){
-      throw new HttpException('Error al borrar el usuario', HttpStatus.BAD_REQUEST);
+    } catch (error) {
+      throw new HttpException(
+        'Error al borrar el usuario',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
-  async verAyudantes() : Promise<usuario[]> {
+  async verAyudantes(): Promise<usuario[]> {
+    try {
+      const manyAyudantes: usuario[] =
+        await this.databaseService.usuario.findMany({
+          where: {
+            rol: roles.AYUDANTE,
+          },
+        });
 
-    try{
-      const manyAyudantes : usuario[] =  await this.databaseService.usuario.findMany({
-        where:{
-          rol: roles.AYUDANTE
-        }
-      })
-  
       return manyAyudantes;
-    } catch(error){
-      throw new HttpException('Error obtener ayudantes', HttpStatus.BAD_REQUEST);
+    } catch (error) {
+      throw new HttpException(
+        'Error obtener ayudantes',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
-  private async userExists(rut: string){
-    
-    const user = await this.databaseService.usuario.findUnique(
-      {where : { rut: rut}}
-    );
+  private async userExists(rut: string) {
+    const user = await this.databaseService.usuario.findUnique({
+      where: { rut: rut },
+    });
 
-    if(!user){
+    if (!user) {
       return false;
-    };
+    }
     return true;
   }
-
-
 }
