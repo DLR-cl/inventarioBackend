@@ -11,15 +11,15 @@ model especial {
   id_prestamo    Int       @id @default(autoincrement())
   descripcion    String    @db.VarChar(1000)
   motivo         String    @db.VarChar(1000)
-  id_usuario     Int
+  id_usuario     Int?
   estado        Boolean
   id_dici        String    @db.VarChar(30)
   fecha_inicio   DateTime  @db.Date()
   fecha_fin      DateTime @db.Date()
-  rut_estudiante String    @db.VarChar(12)
+  rut_estudiante String?    @db.VarChar(12)
 
-  estudiante estudiante @relation(fields: [rut_estudiante], references: [rut])
-  admin      usuario    @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "especial_ibfk_2")
+  estudiante estudiante? @relation(fields: [rut_estudiante], references: [rut], onDelete: SetNull)
+  admin      usuario?    @relation(fields: [id_usuario], references: [id_usuario], onDelete: SetNull, onUpdate: NoAction, map: "especial_ibfk_2")
   recursos   recurso    @relation(fields: [id_dici], references: [id_dici], onDelete: NoAction, onUpdate: NoAction, map: "especial_ibfk_3")
 
   @@index([id_usuario], map: "id_usuario")
@@ -32,12 +32,12 @@ model regular {
   hora_inicio DateTime   @db.DateTime
   hora_fin    DateTime?  @db.DateTime
   estado      Boolean
-  rut         String     @db.VarChar(12)
-  id_usuario  Int
-  id_dici     String     @db.VarChar(30)
-  recursos    recurso    @relation(fields: [id_dici], references: [id_dici], onDelete: NoAction, onUpdate: NoAction, map: "regular_ibfk_1")
-  estudiante  estudiante @relation(fields: [rut], references: [rut], onDelete: NoAction, onUpdate: NoAction, map: "regular_ibfk_2")
-  user        usuario    @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "regular_ibfk_3")
+  rut         String?     @db.VarChar(12)
+  id_usuario  Int?
+  id_dici     String?     @db.VarChar(30)
+  recursos    recurso?    @relation(fields: [id_dici], references: [id_dici], onDelete: SetNull, onUpdate: NoAction, map: "regular_ibfk_1")
+  estudiante  estudiante? @relation(fields: [rut], references: [rut], onDelete: SetNull, onUpdate: NoAction, map: "regular_ibfk_2")
+  user        usuario?    @relation(fields: [id_usuario], references: [id_usuario], onDelete:SetNull, onUpdate: NoAction, map: "regular_ibfk_3")
 
   @@index([id_usuario], map: "id_usuario")
   @@index([rut], map: "rut")
@@ -87,11 +87,11 @@ model recurso {
   fecha_ingreso  DateTime   @db.DateTime
   modelo         String?    @db.VarChar(50)
   estado_recurso Boolean    @default(true)
-  id_categoria   Int
+  id_categoria   Int?
   id_dici        String     @id @db.VarChar(20)
   id_uta         String?    @db.VarChar(20)
   ubicacion      String    @db.VarChar(500)
-  categoria      categoria  @relation(fields: [id_categoria], references: [id_categoria], onDelete: NoAction, onUpdate: NoAction, map: "recurso_ibfk_1")
+  categoria      categoria?  @relation(fields: [id_categoria], references: [id_categoria], onDelete: SetNull, onUpdate: NoAction, map: "recurso_ibfk_1")
   regular        regular[]
   especial       especial[]
 
