@@ -14,12 +14,15 @@ export class EstudiantesService {
 
   constructor(private readonly databaseService: DatabaseService) { }
   async format(data: Worksheet) {
+    console.log('Funciono')
     const list: string[][] = [];
     data.eachRow((row: Row) => {
       list.push([...(row.values as CellValue[])].splice(1) as string[]);
+
     });
 
     if (!list.length) {
+      console.log('todo vacio')
       return [];
     }
 
@@ -31,14 +34,14 @@ export class EstudiantesService {
     if (missingColumns.length) {
       throw new Error(`El archivo Excel no contiene las columnas esperadas: ${missingColumns.join(', ')}`);
     }
-
+    
     const dataFormat = values.map((valuesItem) =>
       fields.reduce((acc, field, index) => Object.assign(acc, { [field]: valuesItem[index] }), {}),
-    );
-
-    // Obtén todos los estudiantes activos
-    const estudiantesActivos = await this.databaseService.estudiante.findMany({
-      select: {
+  );
+  
+  // Obtén todos los estudiantes activos
+  const estudiantesActivos = await this.databaseService.estudiante.findMany({
+    select: {
         rut: true,
       },
       where: {
@@ -74,6 +77,7 @@ export class EstudiantesService {
             correo: object['E-mail'],
           });
         }
+        console.log(rut);
       }
     }
 

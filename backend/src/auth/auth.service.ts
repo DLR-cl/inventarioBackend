@@ -61,6 +61,8 @@ export class AuthService {
       if (error instanceof HttpException) {
         throw error;
       }
+      console.log(error)
+
       throw new InternalServerErrorException(
         'Ocurrió un error inesperado al validar el usuario.',
       );

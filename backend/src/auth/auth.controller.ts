@@ -10,6 +10,7 @@ export class AuthController {
     ){}
     @Post('login')
     public login(@Body() dataPayload: AuthPayloadDto) {
+    
         return this._authService.validateUser(dataPayload);
     }
 }
