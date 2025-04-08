@@ -86,6 +86,13 @@ export class PrestamoRegularService {
       orderBy: {
         id_prestamo: 'desc',
       },
+      include: {
+        estudiante: {
+          select: { // Especifica los campos del estudiante que quieres incluir
+            nombre: true,
+          },
+        },
+      },
     });
 
     return {
@@ -309,6 +316,13 @@ export class PrestamoRegularService {
           where: {
             hora_fin: null,
           },
+          include: {
+            estudiante: {
+              select: {
+                nombre: true,
+              }
+            }
+          }
         });
 
         return {
