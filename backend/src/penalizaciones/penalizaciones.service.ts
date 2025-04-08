@@ -12,6 +12,15 @@ export class PenalizacionesService {
   constructor(private readonly databaseService: DatabaseService) { }
   async create(createPenalizacioneDto: CreatePenalizacioneDto) {
     try {
+
+
+      if(!(await this.databaseService.estudiante.findUnique({
+        where: {
+          rut: createPenalizacioneDto.rut_estudiante
+        }
+      }))){
+        throw new BadRequestException('Error, el estudiante no existe o el rut no es correcto rut:', createPenalizacioneDto.rut_estudiante);
+      }
       const fecha_inicio = new Date();
       if (createPenalizacioneDto.grado == grados_sancion.LEVE) {
 
@@ -129,7 +138,12 @@ export class PenalizacionesService {
         statusCode: HttpStatus.OK
       }
     } catch (error) {
-      throw new HttpException('Error al crear la sancion', HttpStatus.BAD_REQUEST);
+      if(error instanceof BadRequestException){
+        throw error;
+      }else{
+        throw new InternalServerErrorException('Error interno en el servidor');
+      }
+      
     }
   }
 
