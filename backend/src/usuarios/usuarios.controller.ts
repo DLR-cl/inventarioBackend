@@ -53,4 +53,10 @@ export class UsuariosController {
   remove(@Param('rut') rut: string) {
     return this.usuariosService.remove(rut);
   }
+
+  @Patch('reestablecer-pass/:rut')
+  public defaultPassword(@Param('rut') rut: string){
+    return this.usuariosService.defaultPassword(rut);
+  }
+
 }

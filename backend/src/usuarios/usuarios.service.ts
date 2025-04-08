@@ -254,4 +254,25 @@ export class UsuariosService {
     }
     return true;
   }
+
+  public async defaultPassword(rut: string){
+
+    const firstDigits = rut.replaceAll('.', '').split('-')[0];
+    const hashedPassword = await encrypt(firstDigits);
+
+    const data = await this.databaseService.usuario.update({
+      where: {
+        rut: rut
+      },
+      data: {
+        password: hashedPassword,
+      }
+    });
+
+    return {
+      message: 'Contraseña restaurada con éxito',
+      statusCode: HttpStatus.OK,
+      data: data
+    }
+  }
 }
