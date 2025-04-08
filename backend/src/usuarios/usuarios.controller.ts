@@ -11,6 +11,7 @@ import {
 import { UsuariosService } from './usuarios.service.js';
 import { CreateUsuarioDto } from './dto/create-usuario.dto.js';
 import { ChangePassword, UpdateUsuarioDto } from './dto/update-usuario.dto.js';
+import { ResetPassDto } from './dto/reset-pass.dto.js';
 
 @Controller('usuarios')
 export class UsuariosController {
